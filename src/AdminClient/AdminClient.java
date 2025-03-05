@@ -1,7 +1,8 @@
 package AdminClient;
 
 import Client.Networking.ClientNetworkHandler;
-import NetworkUtils.NetworkUtil;
+import NetworkUtils.NetworkUtil;  // Correctly reference NetworkUtils
+import NetworkUtils.Packets.AdminIDPacket;
 import NetworkUtils.Packets.IPacket;
 import NetworkUtils.PacketRegistry;
 
@@ -9,18 +10,18 @@ import java.util.Scanner;
 
 public class AdminClient {
 
-    public static ClientNetworkHandler networkHandler;
+    private static ClientNetworkHandler networkHandler;
 
     public static void run() {
-        System.out.println("Running admin client!");
+        System.out.println("Running Admin Client!");
         networkHandler = new ClientNetworkHandler();
 
-        // Init connection to server
+        // Init connection
         while (true) {
-            if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {
+            if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {  // Use ClientNetworkHandler for connection
                 System.out.println("Connection failed. Attempting to reconnect...");
                 try {
-                    Thread.sleep(1000); // Suspend execution
+                    Thread.sleep(1000); // Wait before retrying
                 } catch (InterruptedException ignored) {
                 }
                 continue;
@@ -29,11 +30,26 @@ public class AdminClient {
         }
         System.out.println("Established a connection!");
 
-        // Start manual packet sender for admin commands
+        // Send admin packet to server to identify as an Admin client
+        sendAdminPacket();
+
+        // Start manual packet sender to send packets on command
         manualPacketSender();
     }
 
-    // Allows user to manually input admin command and send to the server
+    private static void sendAdminPacket() {
+        // Create the Admin Identification Packet
+        AdminIDPacket adminPacket = new AdminIDPacket();
+
+        // Send the packet using NetworkUtils' sendPacket method (this method expects an IPacket, not the ClientNetworkHandler)
+        if (NetworkUtil.sendPacket(adminPacket, networkHandler)) {  // Pass the packet, not the network handler
+            System.out.println("Admin client identification packet sent!");
+        } else {
+            System.out.println("Failed to send Admin client identification packet.");
+        }
+    }
+
+    // Allows user to manually input packet ID (hexadecimal) and send to server
     private static void manualPacketSender() {
         Scanner scanner = new Scanner(System.in);
         while (true) {
@@ -42,30 +58,19 @@ public class AdminClient {
             if (input.equalsIgnoreCase("exit")) {
                 break;
             }
-
             try {
                 // Parse the input packet ID as a hexadecimal number
                 byte packetID = (byte) Integer.parseInt(input, 16);
-
-                // Use existing packet system to create the corresponding packet by packetID
+                // Use PacketRegistry to create the corresponding packet by packetID
                 IPacket packet = PacketRegistry.createPacket(packetID);
-
                 if (packet == null) {
                     System.out.println("No packet registered with ID: " + input);
                 } else {
-                    // Send the packet using NetworkUtils
-                    if (NetworkUtil.sendPacket(networkHandler, packet)) {
+                    // Send the packet to the server using NetworkUtils
+                    if (NetworkUtil.sendPacket(packet, networkHandler)) {
                         System.out.println("Sent packet: " + packet);
                     } else {
                         System.out.println("Failed to send packet.");
-                    }
-
-                    // Optionally, receive a response from the server (if the server sends back any response)
-                    IPacket responsePacket = NetworkUtil.receivePacket(networkHandler);
-                    if (responsePacket != null) {
-                        System.out.println("Received response from server: " + responsePacket);
-                    } else {
-                        System.out.println("No response from server.");
                     }
                 }
             } catch (NumberFormatException e) {

@@ -54,8 +54,7 @@ public class Client {
                 if (packet == null) {
                     System.out.println("No packet registered with ID: " + input);
                 } else {
-                    // Send the packet using NetworkUtil.sendPacket instead of directly from the handler
-                    if (NetworkUtil.sendPacket(networkHandler, packet)) {
+                    if (NetworkUtil.sendPacket(packet, networkHandler)) {
                         System.out.println("Sent packet: " + packet);
                     } else {
                         System.out.println("Failed to send packet.");

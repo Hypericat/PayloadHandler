@@ -59,4 +59,7 @@ public class ClientNetworkHandler {
             System.err.println("Error closing connection: " + e.getMessage());
         }
     }
+    public Socket getSocket() {
+        return socket;
+    }
 }
