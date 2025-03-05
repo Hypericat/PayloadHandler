@@ -33,8 +33,19 @@ public class Client {
         }
         System.out.println("Established a connection!");
 
-        // Start manual packet sender to send packets on command
-        manualPacketSender();
+        while (true) {
+            try {
+                loop();
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void loop() {
+        //networkHandler.getConnection().receive();
+        //networkHandler.getConnection().send();
     }
 
     // Allows user to manually input packet ID (hexadecimal) and send to server
@@ -64,9 +75,5 @@ public class Client {
                 System.out.println("Invalid input. Please enter a valid hexadecimal value.");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        run();
     }
 }

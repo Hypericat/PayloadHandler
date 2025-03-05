@@ -29,11 +29,16 @@ public class Server {
 
         while (true) {
             try {
+                loop();
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void loop() {
+
     }
 
     private static void handleIncomingPackets() {

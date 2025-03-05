@@ -24,6 +24,14 @@ public class ServerNetworkHandler {
         return true;
     }
 
+    public SocketConnection getConnection(int index) {
+        return this.connections.get(index);
+    }
+
+    public int getConnectionCount() {
+        return this.connections.size();
+    }
+
     public void close() {
         connections.forEach(SocketConnection::close);
     }
