@@ -47,6 +47,10 @@ public class ByteBuf {
         this.readerIndex = i;
     }
 
+    public byte[] getRawBytes() {
+        return Arrays.copyOf(buf, writtenBytes); // Return the written portion of the buffer
+    }
+
     public int readerIndex() {
         return this.readerIndex;
     }
@@ -92,8 +96,11 @@ public class ByteBuf {
     }
 
 
-    public void readByte() {
-
+    public byte readByte() {
+        if (readerIndex >= writtenBytes) {
+            throw new IndexOutOfBoundsException("Attempted to read beyond buffer limit!");
+        }
+        return buf[readerIndex++]; // Return byte and move reader index forward
     }
 
     // read int

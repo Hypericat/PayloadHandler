@@ -11,7 +11,7 @@ public class Client {
     public static final int msRetryConnect = 0;
     public static final int msRetryFinalConnect = secondsRetryConnect * 1000 + msRetryConnect;
 
-    private static ClientNetworkHandler networkHandler;
+    public static ClientNetworkHandler networkHandler;
 
     public static void run() {
         System.out.println("Running client!");

@@ -4,9 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.concurrent.TimeUnit;
 
 public class ClientNetworkHandler {
     private static Socket socket;
@@ -14,46 +12,38 @@ public class ClientNetworkHandler {
     private static DataOutputStream outputStream;
 
     public ClientNetworkHandler() {
-
     }
 
-    // Resolves ip from hostname
+    // Connect to the server
     public boolean connect(short port, String serverHostname) {
         try {
             InetAddress serverAddress = InetAddress.getByName(serverHostname);
             System.out.println("Resolved IP: " + serverAddress.getHostAddress());
 
-            // Connect to server
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(serverAddress, port), 2000);
-            //inputStream = new DataInputStream(socket.getInputStream());
-            //outputStream = new DataOutputStream(socket.getOutputStream());
+            // Connect to the server
+            socket = new Socket(serverAddress, port);
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
+
+            System.out.println("Connected to the server.");
         } catch (IOException e) {
             return false;
         }
         return true;
     }
 
-    // listen for incoming commands
-    private void listenForCommands() throws IOException {
-        while (true) {
-            try {
-                // simulating a recieved "command"
-                String command = inputStream.readUTF();
-                System.out.println("Received command: " + command);
-
-                // send response back
-                outputStream.writeUTF("Command executed: " + command);
-            } catch (IOException e) {
-                System.out.println("Connection lost. Attempting to reconnect...");
-                closeConnection();
-                //connect();  // reconnect
-            }
-        }
+    // Getter method for inputStream
+    public DataInputStream getInputStream() {
+        return inputStream;
     }
 
-    // Gracefully close the connection
-    public void closeConnection() {
+    // Getter method for outputStream
+    public DataOutputStream getOutputStream() {
+        return outputStream;
+    }
+
+    // Close the connection and streams
+    public void close() {
         try {
             if (inputStream != null) inputStream.close();
             if (outputStream != null) outputStream.close();
