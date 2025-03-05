@@ -1,8 +1,9 @@
 package Client.Networking;
 
-import NetworkUtils.PacketRegistry;
+import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packets.IPacket;
 import NetworkUtils.ByteBuf;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -45,54 +46,6 @@ public class ClientNetworkHandler {
 
     public DataOutputStream getOutputStream() {
         return outputStream;
-    }
-
-    // Method to send packet to server
-    public boolean sendPacket(IPacket packet) {
-        try {
-            if (outputStream == null) return false;
-
-            // Create ByteBuf and write packet ID and encoded packet data
-            ByteBuf buf = new ByteBuf();
-            buf.writeByte(packet.getPacketID());
-            int length = packet.encode(buf);
-
-            // Send length and encoded packet data to server
-            outputStream.writeInt(length);
-            outputStream.write(buf.getRawBytes(), 0, length);
-            outputStream.flush();
-
-            return true;
-        } catch (IOException e) {
-            System.err.println("Error sending packet: " + e.getMessage());
-        }
-        return false;
-    }
-
-    // Method to receive packet from server
-    public IPacket receivePacket() {
-        try {
-            if (inputStream == null) return null;
-
-            int length = inputStream.readInt();  // Read packet length
-            byte[] rawData = new byte[length];
-            inputStream.readFully(rawData);  // Read packet data
-
-            ByteBuf buf = new ByteBuf(rawData);
-            byte packetID = buf.readByte();  // Read packet ID
-
-            // Use PacketRegistry to create correct packet based on packetID
-            IPacket packet = PacketRegistry.createPacket(packetID);
-            if (packet != null) {
-                packet.decode(buf);
-                return packet;
-            }
-
-            System.err.println("Unknown packet ID received: " + packetID);
-        } catch (IOException e) {
-            System.err.println("Error receiving packet: " + e.getMessage());
-        }
-        return null;
     }
 
     // Close connection and streams
