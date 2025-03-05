@@ -1,28 +1,30 @@
 package Server.Networking;
 
+import NetworkUtils.SocketConnection;
+
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerNetworkHandler {
-    private ServerSocket socket;
+    private final List<SocketConnection> connections = new ArrayList<>();
+    ServerSocket serverSocket;
 
     public boolean readConnections(short port) {
         try {
-            socket = new ServerSocket(port);
-            socket.accept();
+            serverSocket = new ServerSocket(port);
+            Socket socket = serverSocket.accept();
+
+            connections.add(new SocketConnection(socket));
         } catch (IOException e) {
             return false;
         }
-
         return true;
     }
 
     public void close() {
-        if (socket.isClosed()) return; // Socket is currently not connected so why would we disconnect
-        try {
-        socket.close();
-        } catch (IOException e) {
-            return;
-        }
+        connections.forEach(SocketConnection::close);
     }
 }
