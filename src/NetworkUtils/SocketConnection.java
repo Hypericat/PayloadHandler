@@ -29,6 +29,9 @@ public class SocketConnection {
 
         outgoingThread = new Thread(new OutgoingRunnable(this));
         incomingThread = new Thread(new IncomingRunnable(this));
+
+        outgoingThread.start();
+        incomingThread.start();
     }
 
     public boolean isActive() {
@@ -77,15 +80,27 @@ public class SocketConnection {
         }
     }
 
-    public void readIn() {
+    public boolean readIn() {
+        int available;
+        try {
+            available = in.available();
+            if (available == 0) return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
         synchronized (incoming) {
             try {
-                incoming.add(new ByteBuf(in.readAllBytes()));
-                System.out.println("Added bytes to queue!");
+                byte[] b = new byte[available];
+                in.read(b); // Returns amount of bytes read
+
+                incoming.add(new ByteBuf(b));
+                System.out.println("Added bytes to queue! : " + incoming.peek().toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return true;
     }
 
     public boolean writeOut() {

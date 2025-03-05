@@ -2,6 +2,8 @@ package NetworkUtils;
 
 public class IncomingRunnable implements Runnable {
     SocketConnection connection;
+    private final static int SLEEP_TIME = 200;
+
 
     public IncomingRunnable(SocketConnection connection) {
         this.connection = connection;
@@ -10,7 +12,13 @@ public class IncomingRunnable implements Runnable {
     @Override
     public void run() {
         while (connection.isActive()) {
-            connection.readIn();
+            if (!connection.readIn()) {
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
