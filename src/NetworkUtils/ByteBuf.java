@@ -8,6 +8,7 @@ public class ByteBuf {
     float expandSize = 2f;
     boolean writeable = true;
     private int readerIndex = 0;
+    private int writerIndex = 0;
     private int writtenBytes = 0;
 
     public ByteBuf() {
@@ -43,7 +44,7 @@ public class ByteBuf {
     }
 
     public void readerIndex(int i) {
-        if (readerIndex < 0) return;
+        if (i < 0) return;
         this.readerIndex = i;
     }
 
@@ -55,8 +56,25 @@ public class ByteBuf {
         return this.readerIndex;
     }
 
+    public void writerIndex(int i) {
+        if (i < 0) return;
+        this.writerIndex = i;
+    }
+
+    public int writerIndex() {
+        return this.writerIndex;
+    }
+
+    public int readerIndexBytesLeft() {
+        return writtenBytes - readerIndex;
+    }
+
     public boolean isReaderIndexLast() {
         return readerIndex == writtenBytes;
+    }
+
+    public boolean isWriterIndexLast() {
+        return writerIndex == writtenBytes;
     }
 
     private boolean expandIfNeeded(int byteSize) {
@@ -73,35 +91,50 @@ public class ByteBuf {
             writeByte(b);
             return;
         }
-        if (isReaderIndexLast()) {
-            this.buf[readerIndex] = b;
+        if (isWriterIndexLast()) {
+            this.buf[writerIndex] = b;
         } else {
             byte temp;
-            for (int i = readerIndex; i <= writtenBytes; i++) { // Not sure if this is right
+            for (int i = writerIndex; i <= writtenBytes; i++) { // Not sure if this is right
                 temp = this.buf[i];
                 this.buf[i] = b;
                 b = temp;
             }
         }
-        readerIndex ++;
+        writerIndex ++;
         writtenBytes ++;
     }
 
     public void writeInt(int i) {
         if (!writeable) throw new IllegalStateException("Attempted to write to non writeable byte buf!");
-        writeByte((byte) (i >> 24));
-        writeByte((byte) ((i & 0xFF0000) >> 16));
-        writeByte((byte) ((i & 0xFF00) >> 8));
+        writeByte((byte) (i >>> 24));
+        writeByte((byte) ((i & 0xFF0000) >>> 16));
+        writeByte((byte) ((i & 0xFF00) >>> 8));
         writeByte((byte) (i & 0xFF));
     }
 
 
     public byte readByte() {
-        if (readerIndex >= writtenBytes) {
-            throw new IndexOutOfBoundsException("Attempted to read beyond buffer limit!");
-        }
-        return buf[readerIndex++]; // Return byte and move reader index forward
+        if (readerIndexBytesLeft() < 1) throw new IndexOutOfBoundsException("Tried to read byte out of bounds of byteBuf!");
+        return buf[readerIndex++];
     }
+
+    public void readBytes(byte[] dst) {
+        if (readerIndexBytesLeft() < 1) throw new IndexOutOfBoundsException();
+        System.arraycopy(buf, readerIndex, dst, 0, readerIndexBytesLeft());
+        readerIndex++;
+    }
+
+    public int readInt() {
+        int i;
+        i = readByte() << 24;
+        i |= readByte() << 16;
+        i |= readByte() << 8;
+        i |= readByte();
+        return i;
+    }
+
+    // Make some tests
 
     // read int
     // write bytes
@@ -109,4 +142,8 @@ public class ByteBuf {
 
     // write string
     // read string
+
+    public String toString() {
+        return Arrays.toString(buf);
+    }
 }
