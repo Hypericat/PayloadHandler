@@ -2,6 +2,7 @@ package NetworkUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -90,17 +91,20 @@ public class SocketConnection {
             return false;
         }
         synchronized (incoming) {
+            ByteBuf buf = new ByteBuf(available);
             try {
-                byte[] b = new byte[available];
-                in.read(b); // Returns amount of bytes read
-
-                incoming.add(new ByteBuf(b));
-                System.out.println("Added bytes to queue! : " + incoming.peek().toString());
+                socket.setSoTimeout(2);
+                while (true) {
+                    buf.writeByte(in.readByte());
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                if (buf.writerIndex() < 1) return false;
+                incoming.add(buf);
+                System.out.println("Added buf : " + buf);
+                return true;
             }
         }
-        return true;
+
     }
 
     public boolean writeOut() {

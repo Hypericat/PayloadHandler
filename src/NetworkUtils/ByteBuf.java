@@ -77,6 +77,10 @@ public class ByteBuf {
         return writerIndex == writtenBytes;
     }
 
+    public int getWrittenByteCount() {
+        return writtenBytes;
+    }
+
     private boolean expandIfNeeded(int byteSize) {
         if (buf.length - writtenBytes < byteSize) {
             expand();

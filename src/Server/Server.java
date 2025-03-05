@@ -11,7 +11,6 @@ import java.io.IOException;
 
 public class Server {
     private static ServerNetworkHandler networkHandler;
-    private static ClientNetworkHandler clientNetworkHandler;  // Instance for client communication
     private static final byte ADMIN_PACKET_ID = 0x01;  // Admin Client packet identifier
 
     public static void run() {
@@ -27,13 +26,19 @@ public class Server {
         }
         System.out.println("Client connected!");
 
-        // Handle packets for connected client
-        handleIncomingPackets();
+
+        while (true) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static void handleIncomingPackets() {
         while (true) {
-            IPacket packet = NetworkUtil.receivePacket(clientNetworkHandler);  // Attempt to receive packet
+            IPacket packet =null;  // Attempt to receive packet
 
             if (packet != null) {
                 System.out.println("Received packet with ID: " + packet.getPacketID());

@@ -20,12 +20,13 @@ public class NetworkUtil {
             // Create ByteBuf and write packet ID and encoded packet data
             ByteBuf buf = new ByteBuf();
             buf.writeByte(packet.getPacketID());
-            int length = packet.encode(buf);
+            packet.encode(buf);
+            buf.writerIndex(0);
+            buf.writeInt(buf.getWrittenByteCount());
 
             // Send length and encoded packet data to server
             DataOutputStream out = networkHandler.getOutputStream();
-            out.writeInt(length);
-            out.write(buf.getRawBytes(), 0, length);
+            out.write(buf.getRawBytes());
             out.flush();
 
             return true;
