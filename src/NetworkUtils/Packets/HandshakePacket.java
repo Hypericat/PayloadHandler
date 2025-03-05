@@ -24,7 +24,7 @@ public class HandshakePacket implements IPacket {
 
     @Override
     public byte getPacketID() {
-        return 0x24;
+        return 0x00;
     }
 
     @Override
