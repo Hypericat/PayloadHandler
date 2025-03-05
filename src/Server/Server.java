@@ -25,11 +25,23 @@ public class Server {
         }
         System.out.println("Client connected!");
 
+        while (true) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         // Handle packets for connected client
 
 
-        networkHandler.close(); // Close connection after handling
+        //networkHandler.close(); // Close connection after handling
     }
+
+
+
+
+
 
     private static void processPacket(IPacket packet) {
         byte packetID = packet.getPacketID();

@@ -10,7 +10,6 @@ public class PacketRegistry {
 
 
      //Registers packet class with a packet ID
-
     public static void registerPacket(byte packetID, Class<? extends IPacket> packetClass) {
         registeredPackets.put(packetID, packetClass);
     }
