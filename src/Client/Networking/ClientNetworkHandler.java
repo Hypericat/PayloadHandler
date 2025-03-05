@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
@@ -23,11 +24,10 @@ public class ClientNetworkHandler {
             System.out.println("Resolved IP: " + serverAddress.getHostAddress());
 
             // Connect to server
-            socket = new Socket(serverAddress, port);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(serverAddress, port), 2000);
             //inputStream = new DataInputStream(socket.getInputStream());
             //outputStream = new DataOutputStream(socket.getOutputStream());
-
-            System.out.println("Connected to the server.");
         } catch (IOException e) {
             return false;
         }

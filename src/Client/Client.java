@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Client {
 
-    public static final int secondsRetryConnect = 15;
+    public static final int secondsRetryConnect = 0;
     public static final int msRetryConnect = 0;
     public static final int msRetryFinalConnect = secondsRetryConnect * 1000 + msRetryConnect;
 
@@ -22,10 +22,11 @@ public class Client {
             if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {
                 System.out.println("Connection failed. Attempting to reconnect...");
                 try {
-                    Thread.sleep(msRetryFinalConnect);  // Suspend execution
-                } catch (Exception e) {
-                    continue;
+                    Thread.sleep(msRetryFinalConnect); // Suspend execution
+                } catch (InterruptedException ignored) {
+
                 }
+                continue;
             }
             break;
         }
