@@ -48,6 +48,10 @@ public class ByteBuf {
         this.readerIndex = i;
     }
 
+    public byte[] getRawBytes() {
+        return Arrays.copyOf(buf, writtenBytes); // Return the written portion of the buffer
+    }
+
     public int readerIndex() {
         return this.readerIndex;
     }
