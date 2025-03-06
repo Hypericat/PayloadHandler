@@ -25,13 +25,10 @@ public class PacketHandler {
             connection.sendPacket(new PrintPacket("Admin verified!"));
         } else {
             System.out.println("Invalid Admin ID: " + adminID);
-            connection.sendPacket(new PrintPacket("Wrong password!"));
+            connection.sendPacket(new PrintPacket("Invalid Admin ID: " + adminID));
             connection.close();
         }
     }
-
-
-
 
     private boolean isValidAdmin(String adminID) {
         return adminID.equals("Winston smells");
