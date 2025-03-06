@@ -33,7 +33,7 @@ public class AdminClient {
             }
             break;
         }
-        System.out.println("Established a connection!");
+        System.out.println("Established a connection as an admin!");
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
         // Send AdminID packet to server for verification
