@@ -1,4 +1,5 @@
 import NetworkUtils.Packets.*;
+import Other.Util;
 import Server.Server;
 import Client.Client;
 import AdminClient.AdminClient;
@@ -7,7 +8,6 @@ import NetworkUtils.PacketRegistry;
 public class Main {
     public static void main(String[] args) {
         registerPackets();
-        //speak("Hello world");
 
         // Check if argument "admin" is passed to run Admin Client
         if (args.length > 0 && args[0].equalsIgnoreCase("-admin")) {
@@ -27,6 +27,7 @@ public class Main {
         PacketRegistry.registerPacket((byte) 0x01, AdminIDPacket.class);
         PacketRegistry.registerPacket((byte) 0x02, PrintPacket.class);
         PacketRegistry.registerPacket((byte) 0x03, WebsitePacket.class);
+        PacketRegistry.registerPacket((byte) 0x04, SpeakPacket.class);
         PacketRegistry.registerPacket((byte) 0x05, FileUploadStartPacket.class);
     }
 }

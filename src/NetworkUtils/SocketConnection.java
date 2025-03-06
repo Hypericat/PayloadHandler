@@ -1,11 +1,10 @@
 package NetworkUtils;
 
+import NetworkUtils.Packets.FileUploadStartPacket;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class SocketConnection {
     private final Socket socket;
@@ -13,6 +12,8 @@ public class SocketConnection {
     private final DataOutputStream out;
     private final Queue<ByteBuf> incoming;
     private final Queue<ByteBuf> outgoing;
+
+    private final HashMap<Integer, FileTask> activeUploads = new HashMap<>();
 
     Thread outgoingThread;
     Thread incomingThread;
@@ -133,6 +134,33 @@ public class SocketConnection {
 
         this.send(buf);
         return true;
+    }
+
+    public int getRandomFileID() {
+        Random random = new Random();
+        int id = random.nextInt();
+        while (activeUploads.containsKey(id)) {
+            id = random.nextInt();
+        }
+        return id;
+    }
+
+    public void registerFileID(FileUploadStartPacket packet) {
+        if (activeUploads.containsKey(packet.getId())) {
+            throw new IllegalStateException("An already existing download ID was provided!");
+        }
+        activeUploads.put(packet.getId(), new FileTask(packet.getFileName(), packet.getFilePath(), packet.getId()));
+    }
+
+    public void addToFileID(int id, byte[] array) {
+        if (!activeUploads.containsKey(id)) throw new IllegalStateException("Tried adding to file chunk with no registered start");
+        activeUploads.get(id).addData(array);
+    }
+
+    public FileTask finishFileID(int id) {
+        FileTask task = activeUploads.get(id);
+        activeUploads.remove(id);
+        return task;
     }
 
 

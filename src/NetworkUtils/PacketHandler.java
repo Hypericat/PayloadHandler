@@ -1,6 +1,7 @@
 package NetworkUtils;
 
 import NetworkUtils.Packets.*;
+import Other.Util;
 
 import java.awt.*;
 import java.net.URI;
@@ -39,8 +40,12 @@ public class PacketHandler {
          System.out.println("[Message] : " + packet.getMessage());
     }
 
-    public void onUploadStart(FileUploadStartPacket packet) {
+    public void onSpeak(SpeakPacket packet) {
+        Util.speak(packet.getMessage());
+    }
 
+    public void onUploadStart(FileUploadStartPacket packet) {
+        connection.registerFileID(packet);
     }
 
     public void onWebsite(WebsitePacket packet) {
