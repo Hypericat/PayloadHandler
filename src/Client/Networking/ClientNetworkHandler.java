@@ -1,8 +1,6 @@
 package Client.Networking;
 
 import NetworkUtils.SocketConnection;
-
-import javax.naming.ldap.SortKey;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

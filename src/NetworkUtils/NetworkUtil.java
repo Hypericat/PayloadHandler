@@ -1,8 +1,5 @@
 package NetworkUtils;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 public class NetworkUtil {
 
     public static final short port = 420;

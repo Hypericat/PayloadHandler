@@ -23,7 +23,7 @@ public class AdminPacket extends Packet {
 
     @Override
     public String toString() {
-        return "AdminPacket";
+        return "Admin Packet";
     }
 
     @Override

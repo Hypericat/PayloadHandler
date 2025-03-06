@@ -1,27 +1,33 @@
 package AdminClient;
 
 import Client.Networking.ClientNetworkHandler;
-import NetworkUtils.NetworkUtil;  // Correctly reference NetworkUtils
-import NetworkUtils.Packets.AdminPacket;
+import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
-import NetworkUtils.PacketRegistry;
+import NetworkUtils.PacketHandler;
+import NetworkUtils.Packets.PrintPacket;
+import NetworkUtils.Packets.AdminIDPacket; // Import the new packet
 
-import java.util.Scanner;
+import java.util.List;
 
 public class AdminClient {
 
+    public static final int secondsRetryConnect = 0;
+    public static final int msRetryConnect = 0;
+    public static final int msRetryFinalConnect = secondsRetryConnect * 1000 + msRetryConnect;
+
     private static ClientNetworkHandler networkHandler;
+    private static PacketHandler packetHandler;
 
     public static void run() {
-        System.out.println("Running Admin Client!");
+        System.out.println("Running admin client!");
         networkHandler = new ClientNetworkHandler();
 
         // Init connection
         while (true) {
-            if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {  // Use ClientNetworkHandler for connection
+            if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {
                 System.out.println("Connection failed. Attempting to reconnect...");
                 try {
-                    Thread.sleep(1000); // Wait before retrying
+                    Thread.sleep(msRetryFinalConnect); // Suspend execution
                 } catch (InterruptedException ignored) {
                 }
                 continue;
@@ -29,40 +35,32 @@ public class AdminClient {
             break;
         }
         System.out.println("Established a connection!");
+        packetHandler = new PacketHandler(networkHandler.getConnection());
 
-        // Send admin packet to server to identify as an Admin client
-        networkHandler.getConnection().sendPacket(new AdminPacket());
+        // Send AdminID packet to server for verification
+        String adminID = "Admin123"; // Replace with your admin ID
+        networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
-        manualPacketSender();
-    }
+        networkHandler.getConnection().sendPacket(new PrintPacket("Ping!"));
 
-    // Allows user to manually input packet ID (hexadecimal) and send to server
-    private static void manualPacketSender() {
-        Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Enter a packet ID (hex) to send (or type 'exit' to quit):");
-            String input = scanner.nextLine();
-            if (input.equalsIgnoreCase("exit")) {
-                break;
-            }
             try {
-                // Parse the input packet ID as a hexadecimal number
-                byte packetID = (byte) Integer.parseInt(input, 16);
-                // Use PacketRegistry to create the corresponding packet by packetID
-                Packet packet = PacketRegistry.createPacket(packetID);
-                if (packet == null) {
-                    System.out.println("No packet registered with ID: " + input);
-                } else {
-                    // Send the packet to the server using NetworkUtils
-                    if (networkHandler.getConnection().sendPacket(packet)) {
-                        System.out.println("Sent packet: " + packet);
-                    } else {
-                        System.out.println("Failed to send packet.");
-                    }
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid hexadecimal value.");
+                loop();
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+    public static void loop() {
+        List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
+        packets.forEach(packet -> {
+            System.out.println("Received packet : " + packet.toString());
+            packet.execute(packetHandler);
+        });
+
+        //networkHandler.getConnection().receive();
+        //networkHandler.getConnection().send();
     }
 }

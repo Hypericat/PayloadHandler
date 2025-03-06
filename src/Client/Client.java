@@ -4,11 +4,9 @@ import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
-import NetworkUtils.PacketRegistry;
 import NetworkUtils.Packets.PrintPacket;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class Client {
 

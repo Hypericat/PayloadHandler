@@ -1,9 +1,6 @@
 package NetworkUtils;
 
-import NetworkUtils.Packets.AdminPacket;
-import NetworkUtils.Packets.HandshakePacket;
-import NetworkUtils.Packets.PrintPacket;
-import NetworkUtils.Packets.WebsitePacket;
+import NetworkUtils.Packets.*;
 
 import java.awt.*;
 import java.net.URI;
@@ -18,6 +15,21 @@ public class PacketHandler {
 
     public void onHandshake(HandshakePacket packet) {
 
+    }
+
+    public void onAdminID(AdminIDPacket packet) {
+        String adminID = packet.getAdminID();
+
+        if (isValidAdmin(adminID)) {
+            System.out.println("Admin client connected!");
+            connection.sendPacket(new PrintPacket("Admin verified!"));
+        } else {
+            System.out.println("Invalid Admin ID: " + adminID);
+        }
+    }
+
+    private boolean isValidAdmin(String adminID) {
+        return adminID.equals("Winston smells");
     }
 
     public void onAdmin(AdminPacket packet) {
