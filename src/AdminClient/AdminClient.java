@@ -2,8 +2,8 @@ package AdminClient;
 
 import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;  // Correctly reference NetworkUtils
-import NetworkUtils.Packets.AdminIDPacket;
-import NetworkUtils.Packets.IPacket;
+import NetworkUtils.Packets.AdminPacket;
+import NetworkUtils.IPacket;
 import NetworkUtils.PacketRegistry;
 
 import java.util.Scanner;
@@ -31,22 +31,9 @@ public class AdminClient {
         System.out.println("Established a connection!");
 
         // Send admin packet to server to identify as an Admin client
-        sendAdminPacket();
+        networkHandler.getConnection().sendPacket(new AdminPacket());
 
-        // Start manual packet sender to send packets on command
         manualPacketSender();
-    }
-
-    private static void sendAdminPacket() {
-        // Create the Admin Identification Packet
-        AdminIDPacket adminPacket = new AdminIDPacket();
-
-        // Send the packet using NetworkUtils' sendPacket method (this method expects an IPacket, not the ClientNetworkHandler)
-        if (NetworkUtil.sendPacket(adminPacket, networkHandler)) {  // Pass the packet, not the network handler
-            System.out.println("Admin client identification packet sent!");
-        } else {
-            System.out.println("Failed to send Admin client identification packet.");
-        }
     }
 
     // Allows user to manually input packet ID (hexadecimal) and send to server
@@ -67,7 +54,7 @@ public class AdminClient {
                     System.out.println("No packet registered with ID: " + input);
                 } else {
                     // Send the packet to the server using NetworkUtils
-                    if (NetworkUtil.sendPacket(packet, networkHandler)) {
+                    if (networkHandler.getConnection().sendPacket(packet)) {
                         System.out.println("Sent packet: " + packet);
                     } else {
                         System.out.println("Failed to send packet.");
@@ -77,9 +64,5 @@ public class AdminClient {
                 System.out.println("Invalid input. Please enter a valid hexadecimal value.");
             }
         }
-    }
-
-    public static void main(String[] args) {
-        run();
     }
 }

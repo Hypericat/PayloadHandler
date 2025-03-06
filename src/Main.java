@@ -1,3 +1,4 @@
+import NetworkUtils.Packets.AdminPacket;
 import Server.Server;
 import Client.Client;
 import AdminClient.AdminClient;
@@ -20,7 +21,9 @@ public class Main {
 
     private static void registerPackets() {
         // Register the HandshakePacket with its packet ID
+
         PacketRegistry.registerPacket((byte) 0x00, HandshakePacket.class);
-        System.out.println("Registered packets.");
+        PacketRegistry.registerPacket((byte) 0x01, AdminPacket.class);
+
     }
 }

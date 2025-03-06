@@ -1,10 +1,11 @@
 package NetworkUtils.Packets;
 
 import NetworkUtils.ByteBuf;
+import NetworkUtils.IPacket;
 
-public class AdminIDPacket implements IPacket {
+public class AdminPacket implements IPacket {
 
-    public AdminIDPacket() {
+    public AdminPacket() {
     }
 
     @Override
@@ -13,10 +14,8 @@ public class AdminIDPacket implements IPacket {
     }
 
     @Override
-    public int encode(ByteBuf buf) {
+    public void encode(ByteBuf buf) {
 
-        buf.writeByte(this.getPacketID());
-        return 1;
     }
 
     @Override
@@ -26,6 +25,6 @@ public class AdminIDPacket implements IPacket {
 
     @Override
     public String toString() {
-        return "AdminIDPacket";
+        return "AdminPacket";
     }
 }

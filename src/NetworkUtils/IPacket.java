@@ -1,12 +1,10 @@
-package NetworkUtils.Packets;
-
-import NetworkUtils.ByteBuf;
+package NetworkUtils;
 
 public interface IPacket {
     void decode(ByteBuf buf);
 
     // Encode return the length of the packet
-    int encode(ByteBuf buf);
+    void encode(ByteBuf buf);
 
     byte getPacketID();
 

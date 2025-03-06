@@ -2,8 +2,9 @@ package NetworkUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class SocketConnection {
@@ -65,7 +66,7 @@ public class SocketConnection {
     }
 
     public boolean hasIncoming() {
-        return !outgoing.isEmpty();
+        return !incoming.isEmpty();
     }
 
     public void send(ByteBuf buf) {
@@ -121,5 +122,49 @@ public class SocketConnection {
             }
         }
         return true;
+    }
+
+    public boolean sendPacket(IPacket packet) {
+        if (!this.isActive()) return false;
+        ByteBuf buf = new ByteBuf();
+        buf.writeByte(packet.getPacketID());
+        packet.encode(buf);
+        buf.writerIndex(0);
+        buf.writeInt(buf.getWrittenByteCount());
+
+        this.send(buf);
+        return true;
+    }
+
+
+
+    public List<IPacket> parseReceivedPackets() {
+        List<IPacket> packets = new ArrayList<>();
+        synchronized (incoming) {
+            while (this.hasIncoming()) {
+                System.out.println("Found incoming packet");
+                ByteBuf buf = incoming.remove();
+                if (buf == null) throw new IllegalArgumentException("Peeking into null buffer!");
+
+                while (buf.readableBytes() > 0) {
+                    if (buf.readableBytes() < 4) break; // Size did not fit in this buffer
+                    int size = buf.readInt();
+                    if (size > buf.readableBytes()) break;
+                    int readerIndex = buf.readerIndex();
+                    byte packetID = buf.readByte();
+                    IPacket packet = PacketRegistry.createPacket(packetID);
+                    if (packet == null) throw new IllegalArgumentException("Invalid packetID provided!");
+                    packet.decode(new ByteBuf(buf, buf.readerIndex(), size - 1));
+                    buf.readerIndex(readerIndex + size);
+                    packets.add(packet);
+                }
+                if (buf.readableBytes() != 0) {
+                    ByteBuf nextBuf = incoming.peek();
+                    nextBuf.writerIndex(0);
+                    nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
+                }
+            }
+        }
+        return packets;
     }
 }

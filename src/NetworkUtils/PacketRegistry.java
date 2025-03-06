@@ -1,7 +1,5 @@
 package NetworkUtils;
 
-import NetworkUtils.Packets.IPacket;
-
 import java.util.HashMap;
 import java.util.Map;
 

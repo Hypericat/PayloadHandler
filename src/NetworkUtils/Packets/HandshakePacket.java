@@ -1,8 +1,7 @@
 package NetworkUtils.Packets;
 
 import NetworkUtils.ByteBuf;
-
-import java.nio.ByteBuffer;
+import NetworkUtils.IPacket;
 
 public class HandshakePacket implements IPacket {
 
@@ -16,10 +15,8 @@ public class HandshakePacket implements IPacket {
     }
 
     @Override
-    public int encode(ByteBuf buf) {
-        //buf.writeVarInt(1);
-        //buf.writeByte(this.getPacketID());
-        return 1;
+    public void encode(ByteBuf buf) {
+
     }
 
     @Override

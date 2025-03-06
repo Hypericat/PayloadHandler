@@ -1,7 +1,6 @@
 package NetworkUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 public class ByteBuf {
     private byte[] buf;
@@ -77,6 +76,10 @@ public class ByteBuf {
         return writerIndex == writtenBytes;
     }
 
+    public int readableBytes() {
+        return writtenBytes - this.readerIndex;
+    }
+
     public int getWrittenByteCount() {
         return writtenBytes;
     }
@@ -88,6 +91,8 @@ public class ByteBuf {
         }
         return false;
     }
+
+
 
     public void writeByte(byte b) {
         if (!writeable) throw new IllegalStateException("Attempted to write to non writeable byte buf!");
@@ -136,6 +141,13 @@ public class ByteBuf {
         i |= readByte() << 8;
         i |= readByte();
         return i;
+    }
+
+    // Slow but idc
+    public void writeBytes(byte[] src) {
+        for (byte b : src) {
+            writeByte(b);
+        }
     }
 
     // Make some tests

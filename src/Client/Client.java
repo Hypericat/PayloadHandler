@@ -2,9 +2,10 @@ package Client;
 
 import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
-import NetworkUtils.Packets.IPacket;
+import NetworkUtils.IPacket;
 import NetworkUtils.PacketRegistry;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Client {
@@ -33,6 +34,7 @@ public class Client {
         }
         System.out.println("Established a connection!");
 
+        manualPacketSender();
         while (true) {
             try {
                 loop();
@@ -44,6 +46,8 @@ public class Client {
     }
 
     public static void loop() {
+        List<IPacket> packets = networkHandler.getConnection().parseReceivedPackets();
+
         //networkHandler.getConnection().receive();
         //networkHandler.getConnection().send();
     }
@@ -65,7 +69,8 @@ public class Client {
                 if (packet == null) {
                     System.out.println("No packet registered with ID: " + input);
                 } else {
-                    if (NetworkUtil.sendPacket(packet, networkHandler)) {
+                    // Send the packet to the server using NetworkUtils
+                    if (networkHandler.getConnection().sendPacket(packet)) {
                         System.out.println("Sent packet: " + packet);
                     } else {
                         System.out.println("Failed to send packet.");
@@ -76,4 +81,5 @@ public class Client {
             }
         }
     }
+
 }
