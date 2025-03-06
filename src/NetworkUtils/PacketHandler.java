@@ -42,6 +42,7 @@ public class PacketHandler {
     }
 
     public void onWebsite(WebsitePacket packet) {
+        System.out.println("Recieved website packet!");
         try {
             String s = packet.getUrl();
             if (!s.startsWith("http")) s = "https://" + s;

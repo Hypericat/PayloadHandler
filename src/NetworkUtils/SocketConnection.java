@@ -128,6 +128,7 @@ public class SocketConnection {
         buf.writeByte(packet.getPacketID());
         packet.encode(buf);
         buf.writerIndex(0);
+
         buf.writeInt(buf.getWrittenByteCount());
 
         this.send(buf);
@@ -142,7 +143,6 @@ public class SocketConnection {
             while (this.hasIncoming()) {
                 ByteBuf buf = incoming.remove();
                 if (buf == null) throw new IllegalArgumentException("Peeking into null buffer!");
-
                 while (buf.readableBytes() > 0) {
                     if (buf.readableBytes() < 4) break; // Size did not fit in this buffer
                     int size = buf.readInt();
@@ -157,9 +157,10 @@ public class SocketConnection {
                 }
                 if (buf.readableBytes() != 0) {
                     ByteBuf nextBuf = incoming.peek();
-                    nextBuf.writerIndex(0);
+                    nextBuf.writerIndex(0); // This may crash if the following packet hasn't been received yet
                     nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
                 }
+
             }
         }
         return packets;

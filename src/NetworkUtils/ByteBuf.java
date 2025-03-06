@@ -28,7 +28,7 @@ public class ByteBuf {
     }
 
     public ByteBuf(byte[] buf, int start, int length) {
-        if (length < 0) throw new IllegalArgumentException("Value 0 for length given!");
+        if (length < 0) throw new IllegalArgumentException("Value less than 0 for given for length!");
         this.buf = Arrays.copyOfRange(buf, start, start + length);
         this.writeable = false;
         this.writerIndex = length;
@@ -135,10 +135,10 @@ public class ByteBuf {
 
     public int readInt() {
         int i;
-        i = readByte() << 24;
-        i |= readByte() << 16;
-        i |= readByte() << 8;
-        i |= readByte();
+        i = (readByte() & 0xFF) << 24;
+        i |= (readByte() & 0xFF) << 16;
+        i |= (readByte() & 0xFF) << 8;
+        i |= (readByte() & 0xFF);
         return i;
     }
 
@@ -150,9 +150,10 @@ public class ByteBuf {
     }
 
     public void writeString(String s) {
-        if (!this.writeable) throw new IllegalStateException("Tried to write non-writeable Bytebuf!");
+        if (!this.writeable) throw new IllegalStateException("Tried to write non-writeable ByteBuf!");
         writeInt(s.length());
         for (byte b : s.getBytes(StandardCharsets.UTF_8)) {
+
             writeByte(b);
         }
     }
