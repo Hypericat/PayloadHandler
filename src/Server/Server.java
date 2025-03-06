@@ -33,6 +33,7 @@ public class Server {
         // Send initial message to the client
         networkHandler.getConnection(0).sendPacket(new SpeakPacket("Welcome to the server!"));
 
+        //NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\test.mp4"), "movie.mp4", networkHandler.getConnection(0));
         // Start CLI interface for server commands
         startCLI();
 
@@ -147,13 +148,8 @@ public class Server {
             return;
         }
 
-        String srcFilePath = args[0];
-        String dstFilePath = args[1];
-        int fileId = networkHandler.getConnection(0).getRandomFileID();
-
-        FileUploadStartPacket fileUploadStart = new FileUploadStartPacket(srcFilePath, dstFilePath, fileId);
-        networkHandler.getConnection(0).sendPacket(fileUploadStart);
-        System.out.println("Requested client to upload file: " + srcFilePath);
+        NetworkUtil.uploadFile(new File(args[0]), args[1], networkHandler.getConnection(0));
+        System.out.println("Requested client to upload file: " + args[0]);
     }
 
     // Command: Print message

@@ -16,9 +16,6 @@ public class NetworkUtil {
     public static final String serverDDNS = "winstonchurchili.ddns.net";
     public static final int dataPacketByteSize = 1200;
 
-    public static void uploadFile(File file, SocketConnection connection) {
-        uploadFile(file, "", connection);
-    }
     public static void uploadFile(File file, String dst, SocketConnection connection) {
         String name = file.getName();
         byte[] bytes;
