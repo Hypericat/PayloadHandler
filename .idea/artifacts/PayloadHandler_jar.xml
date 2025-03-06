@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="PayloadHandler:jar">
+  <artifact type="jar" name="PayloadHandler:jar">
     <output-path>$USER_HOME$/Downloads</output-path>
     <root id="archive" name="PayloadHandler.jar">
       <element id="module-output" name="PayloadHandler" />
