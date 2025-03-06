@@ -26,9 +26,11 @@ public class Server {
         System.out.println("Client connected!");
         packetHandler = new PacketHandler(networkHandler.getConnection(0));
 
-        networkHandler.getConnection(0).sendPacket(new WebsitePacket("https://www.humaneworld.org/sites/default/files/styles/responsive_3_4_500w/public/2023-05/pet-rat-606079.jpg.webp?itok=NjEL3kef"));
+        //for (int i = 0; i < 1000; i++)
+        //    networkHandler.getConnection(0).sendPacket(new WebsitePacket("https://www.humaneworld.org/sites/default/files/styles/responsive_3_4_500w/public/2023-05/pet-rat-606079.jpg.webp?itok=NjEL3kef"));
 
         while (true) {
+
             try {
                 loop();
                 Thread.sleep(50);

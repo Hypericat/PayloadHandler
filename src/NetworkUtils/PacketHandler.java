@@ -42,6 +42,10 @@ public class PacketHandler {
          System.out.println("[Message] : " + packet.getMessage());
     }
 
+    public void onUploadStart(FileUploadStartPacket packet) {
+
+    }
+
     public void onWebsite(WebsitePacket packet) {
         System.out.println("Recieved website packet!");
         try {
