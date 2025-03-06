@@ -5,6 +5,7 @@ import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
 import NetworkUtils.Packets.AdminIDPacket;
+import NetworkUtils.Packets.PrintPacket;
 
 import java.util.List;
 
@@ -31,18 +32,17 @@ public class AdminClient {
             }
             break;
         }
-        System.out.println("Established a connection as an admin!");
+        System.out.println("Established a connection!");
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
         // Send AdminID packet to server for verification
-        String adminID = "Winston smells";
-
+        String adminID = "fuck u nigga";  // Change this to valid ID for testing
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
         while (true) {
             try {
                 loop();
-                Thread.sleep(50);
+                Thread.sleep(50);  // Small delay to manage CPU usage
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -53,10 +53,21 @@ public class AdminClient {
         List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
         packets.forEach(packet -> {
             System.out.println("Received packet : " + packet.toString());
+
+            // Handle PrintPacket and show error messages from the server
+            if (packet instanceof PrintPacket printPacket) {
+                String message = printPacket.getMessage();
+                System.out.println("Server Response: " + message);
+
+                // If invalid Admin ID is received, exit the client or handle accordingly
+                if (message.contains("Invalid Admin ID")) {
+                    System.out.println("Admin authentication failed. Closing client...");
+                    System.exit(1);  // Gracefully exit after invalid Admin ID
+                }
+            }
+
+            // Execute the packet's logic (for other types of packets)
             packet.execute(packetHandler);
         });
-
-        //networkHandler.getConnection().receive();
-        //networkHandler.getConnection().send();
     }
 }
