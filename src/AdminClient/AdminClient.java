@@ -36,7 +36,7 @@ public class AdminClient {
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
 
-        String adminID = "fuck u nigga";
+        String adminID = "admin123";
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
         while (true) {
@@ -51,13 +51,18 @@ public class AdminClient {
 
     public static void loop() {
         List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
-        packets.forEach(packet -> {
-            System.out.println("Received packet : " + packet.toString());
 
-            if (packet instanceof PrintPacket printPacket) {
+        if (packets.isEmpty()) {
+            System.out.println("No packets received, waiting for server response...");
+        }
+
+        packets.forEach(packet -> {
+            System.out.println("Received packet: " + packet.toString());
+
+            if (packet instanceof PrintPacket) {
+                PrintPacket printPacket = (PrintPacket) packet;
                 String message = printPacket.getMessage();
                 System.out.println("Server Response: " + message);
-
 
                 if (message.contains("Invalid Admin ID")) {
                     System.out.println("Admin authentication failed. Closing client...");
@@ -68,4 +73,5 @@ public class AdminClient {
             packet.execute(packetHandler);
         });
     }
+
 }
