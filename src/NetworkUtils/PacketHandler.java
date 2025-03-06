@@ -19,14 +19,17 @@ public class PacketHandler {
 
     public void onAdminID(AdminIDPacket packet) {
         String adminID = packet.getAdminID().trim();
-        System.out.println("Received AdminID: '" + adminID + "' with length: " + adminID.length());
+
         if (isValidAdmin(adminID)) {
             System.out.println("Admin client connected!");
             connection.sendPacket(new PrintPacket("Admin verified!"));
         } else {
             System.out.println("Invalid Admin ID: " + adminID);
+            connection.sendPacket(new PrintPacket("Wrong Admin ID!"));
+            connection.close();
         }
     }
+
 
 
     private boolean isValidAdmin(String adminID) {
