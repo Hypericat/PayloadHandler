@@ -4,16 +4,14 @@ import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
-import NetworkUtils.Packets.PrintPacket;
-import NetworkUtils.Packets.AdminIDPacket; // Import the new packet
+import NetworkUtils.Packets.AdminIDPacket;
 
 import java.util.List;
 
 public class AdminClient {
 
-    public static final int secondsRetryConnect = 0;
-    public static final int msRetryConnect = 0;
-    public static final int msRetryFinalConnect = secondsRetryConnect * 1000 + msRetryConnect;
+    public static final int secondsRetryConnect = 5;
+    public static final int msRetryFinalConnect = secondsRetryConnect * 1000;
 
     private static ClientNetworkHandler networkHandler;
     private static PacketHandler packetHandler;

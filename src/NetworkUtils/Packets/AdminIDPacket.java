@@ -23,18 +23,17 @@ public class AdminIDPacket extends Packet {
     @Override
     public void decode(ByteBuf buf) {
         // Decode the AdminID from the buffer
-        this.adminID = buf.readString(); // Assuming there's a method like readString in ByteBuf
+        this.adminID = buf.readString();
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        // Encode the AdminID into the buffer
-        buf.writeString(adminID); // Assuming there's a method like writeString in ByteBuf
+        buf.writeString(adminID);
     }
 
     @Override
     public byte getPacketID() {
-        return 0x01; // Unique ID for the AdminID packet
+        return 0x01;
     }
 
     @Override
@@ -44,6 +43,6 @@ public class AdminIDPacket extends Packet {
 
     @Override
     public void execute(PacketHandler handler) {
-        handler.onAdminID(this); // Calls the server-side handler to verify AdminID
+        handler.onAdminID(this);
     }
 }
