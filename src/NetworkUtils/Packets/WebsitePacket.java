@@ -10,8 +10,8 @@ public class WebsitePacket extends Packet {
 
     }
 
-    public WebsitePacket(String message) {
-        this.url = message;
+    public WebsitePacket(String url) {
+        this.url = url;
     }
 
     @Override

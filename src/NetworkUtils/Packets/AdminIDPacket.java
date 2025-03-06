@@ -11,6 +11,7 @@ public class AdminIDPacket extends Packet {
 
     }
 
+
     public AdminIDPacket(String adminID) {
         this.adminID = adminID;
     }

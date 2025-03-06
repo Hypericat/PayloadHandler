@@ -6,6 +6,10 @@ import NetworkUtils.PacketHandler;
 
 public class HandshakePacket extends Packet {
 
+    public HandshakePacket() {
+
+    }
+
     @Override
     public void decode(ByteBuf buf) {
 

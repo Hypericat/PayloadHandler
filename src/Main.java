@@ -7,11 +7,8 @@ import AdminClient.AdminClient;
 import NetworkUtils.PacketRegistry;
 import NetworkUtils.Packets.HandshakePacket;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 public class Main {
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) {
         registerPackets();
 
         // Check if argument "admin" is passed to run Admin Client

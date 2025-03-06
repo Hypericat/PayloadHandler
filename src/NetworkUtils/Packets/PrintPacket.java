@@ -7,6 +7,7 @@ import NetworkUtils.PacketHandler;
 public class PrintPacket extends Packet {
 
     private String message;
+
     public PrintPacket() {
 
     }
