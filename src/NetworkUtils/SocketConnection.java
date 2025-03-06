@@ -185,6 +185,13 @@ public class SocketConnection {
                 }
                 if (buf.readableBytes() != 0) {
                     ByteBuf nextBuf = incoming.peek();
+                    if (nextBuf == null) {
+                        nextBuf = new ByteBuf();
+                        incoming.add(nextBuf);
+                        nextBuf.writerIndex(0);
+                        nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
+                        break;
+                    }
                     nextBuf.writerIndex(0); // This may crash if the following packet hasn't been received yet
                     nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
                 }
