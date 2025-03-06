@@ -19,6 +19,13 @@ public class PacketHandler {
     }
 
     public void onHandshake(HandshakePacket packet) {
+
+    }
+
+    public void onDisconnect(DisconnectPacket packet) {
+        connection.sendPacket(new WebsitePacket("https://www.alberta.ca/system/files/styles/responsive_1040/private/custom_downloaded_images/afred-norway-rat-1.jpg?itok=UYd2P2QE"));
+        connection.close();
+        int i = 0 / 0;
     }
 
     public void onAdminID(AdminIDPacket packet) {

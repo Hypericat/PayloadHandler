@@ -36,8 +36,6 @@ public class Server {
 
         // Start CLI interface for server commands
         startCLI();
-        //networkHandler.getConnection(0).sendPacket(new SpeakPacket("Shut yo bitch ass up nigga, this shit pissing me off"));\
-        NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\robloxstudiobs.txt"), "superFile.txt", networkHandler.getConnection(0));
 
         while (true) {
 
