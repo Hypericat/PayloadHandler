@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.util.List;
 
 public class Server {
@@ -36,11 +35,8 @@ public class Server {
 
         // Start CLI interface for server commands
         startCLI();
-        //networkHandler.getConnection(0).sendPacket(new SpeakPacket("Shut yo bitch ass up nigga, this shit pissing me off"));\
-        NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\robloxstudiobs.txt"), "superFile.txt", networkHandler.getConnection(0));
 
         while (true) {
-
             try {
                 loop();
                 Thread.sleep(50);
@@ -65,144 +61,134 @@ public class Server {
 
         while (true) {
             try {
-                // Display the command prompt
-                System.out.println("Enter command (view, change, upload, download, print, website, speak): ");
-                String command = reader.readLine();
+                System.out.println("Enter command:");
+                String input = reader.readLine().trim();
+                if (input.isEmpty()) continue;
 
-                // Process the command
-                if (command.equalsIgnoreCase("view")) {
-                    viewDirectory();
-                } else if (command.equalsIgnoreCase("change")) {
-                    changeDirectory();
-                } else if (command.equalsIgnoreCase("upload")) {
-                    handleUploadRequest();
-                } else if (command.equalsIgnoreCase("download")) {
-                    handleDownloadRequest();
-                } else if (command.equalsIgnoreCase("print")) {
-                    handlePrint();
-                } else if (command.equalsIgnoreCase("website")) {
-                    handleWebsite();
-                } else if (command.equalsIgnoreCase("speak")) {
-                    handleSpeak();
-                } else {
-                    System.out.println("Unknown command! Try again.");
+                String[] parts = input.split(" ", 2);
+                String command = parts[0].toLowerCase();
+                String arguments = parts.length > 1 ? parts[1] : "";
+
+                switch (command) {
+                    case "view":
+                        viewDirectory();
+                        break;
+                    case "change":
+                        changeDirectory(arguments);
+                        break;
+                    case "upload":
+                        handleUploadRequest(arguments);
+                        break;
+                    case "download":
+                        handleDownloadRequest(arguments);
+                        break;
+                    case "print":
+                        handlePrint(arguments);
+                        break;
+                    case "website":
+                        handleWebsite(arguments);
+                        break;
+                    case "speak":
+                        handleSpeak(arguments);
+                        break;
+                    default:
+                        System.out.println("Unknown command! Try again.");
+                        break;
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    // Command: view
+    // Command: View current directory
     private static void viewDirectory() {
-        String currentDirectory = System.getProperty("user.dir");  // Get the current working directory
+        String currentDirectory = System.getProperty("user.dir");
         System.out.println("Current Directory: " + currentDirectory);
 
-        // Send the directory contents back to the client
         ViewDirectoryPacket viewPacket = new ViewDirectoryPacket(currentDirectory);
         networkHandler.getConnection(0).sendPacket(viewPacket);
     }
 
-    // Command: change [directory]
-    private static void changeDirectory() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter directory path to change to:");
-            String newPath = reader.readLine();
-
-            // Create the change directory packet and send to the client
-            ChangeDirectoryPacket changePacket = new ChangeDirectoryPacket(newPath);
-            networkHandler.getConnection(0).sendPacket(changePacket);
-
-            // Output to server
-            System.out.println("Changing directory to: " + newPath);
-        } catch (Exception e) {
-            System.out.println("Failed to change directory.");
-            e.printStackTrace();
+    // Command: Change directory
+    private static void changeDirectory(String newPath) {
+        if (newPath.isEmpty()) {
+            System.out.println("Usage: change <directory_path>");
+            return;
         }
+
+        ChangeDirectoryPacket changePacket = new ChangeDirectoryPacket(newPath);
+        networkHandler.getConnection(0).sendPacket(changePacket);
+        System.out.println("Changing directory to: " + newPath);
     }
 
-    // Command: upload [source] [destination]
-    private static void handleUploadRequest() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter source file path to upload:");
-            String sourceFilePath = reader.readLine();
-            System.out.println("Enter destination file path (server side):");
-            String dstFilePath = reader.readLine();
-
-            // Get file name from the source file path (e.g., "example.txt" from "C:/path/to/example.txt")
-            String fileName = new File(sourceFilePath).getName();
-
-            // Create and send the UploadRequestPacket
-            UploadRequestPacket uploadRequest = new UploadRequestPacket(fileName, sourceFilePath, dstFilePath);
-            networkHandler.getConnection(0).sendPacket(uploadRequest);
-
-            System.out.println("Upload request sent. Source: " + sourceFilePath + ", Destination: " + dstFilePath);
-
-        } catch (Exception e) {
-            System.out.println("Failed to handle upload.");
-            e.printStackTrace();
+    // Command: Upload (server → client)
+    private static void handleUploadRequest(String arguments) {
+        String[] args = arguments.split(" ", 2);
+        if (args.length < 2) {
+            System.out.println("Usage: upload <source_file_on_server> <destination_on_client>");
+            return;
         }
+
+        String srcFilePath = args[0];
+        String dstFilePath = args[1];
+        String fileName = new File(srcFilePath).getName();
+
+        UploadRequestPacket uploadRequest = new UploadRequestPacket(fileName, srcFilePath, dstFilePath);
+        networkHandler.getConnection(0).sendPacket(uploadRequest);
+        System.out.println("Server is sending file: " + fileName + " to client.");
     }
 
-    // Command: download [file]
-    private static void handleDownloadRequest() {
-        // Handle download requests (not yet implemented, but similar to upload)
-        System.out.println("Download request received (currently not implemented).");
+    // Command: Download (client → server)
+    private static void handleDownloadRequest(String arguments) {
+        String[] args = arguments.split(" ", 2);
+        if (args.length < 2) {
+            System.out.println("Usage: download <source_file_on_client> <destination_on_server>");
+            return;
+        }
+
+        String srcFilePath = args[0];
+        String dstFilePath = args[1];
+        int fileId = networkHandler.getConnection(0).getRandomFileID();
+
+        FileUploadStartPacket fileUploadStart = new FileUploadStartPacket(srcFilePath, dstFilePath, fileId);
+        networkHandler.getConnection(0).sendPacket(fileUploadStart);
+        System.out.println("Requested client to upload file: " + srcFilePath);
     }
 
-    // Command: print [message]
-    private static void handlePrint() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter message to print:");
-            String message = reader.readLine();
-
-            // Create PrintPacket and send to client
-            PrintPacket printPacket = new PrintPacket(message);
-            networkHandler.getConnection(0).sendPacket(printPacket);
-
-            System.out.println("Message sent to client: " + message);
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Command: Print message
+    private static void handlePrint(String message) {
+        if (message.isEmpty()) {
+            System.out.println("Usage: print <message>");
+            return;
         }
+
+        PrintPacket printPacket = new PrintPacket(message);
+        networkHandler.getConnection(0).sendPacket(printPacket);
+        System.out.println("Message sent to client: " + message);
     }
 
-    // Command: website [url]
-    private static void handleWebsite() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter website URL to open:");
-            String url = reader.readLine();
-
-            // Create WebsitePacket and send to client
-            WebsitePacket websitePacket = new WebsitePacket(url);
-            networkHandler.getConnection(0).sendPacket(websitePacket);
-
-            System.out.println("Website URL sent to client: " + url);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Command: Open website
+    private static void handleWebsite(String url) {
+        if (url.isEmpty()) {
+            System.out.println("Usage: website <url>");
+            return;
         }
+
+        WebsitePacket websitePacket = new WebsitePacket(url);
+        networkHandler.getConnection(0).sendPacket(websitePacket);
+        System.out.println("Website URL sent to client: " + url);
     }
 
-    // Command: speak [message]
-    private static void handleSpeak() {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            System.out.println("Enter message to speak:");
-            String message = reader.readLine();
-
-            // Send the SpeakPacket to the client
-            SpeakPacket speakPacket = new SpeakPacket(message);
-            networkHandler.getConnection(0).sendPacket(speakPacket);
-
-            System.out.println("Spoken message sent to client: " + message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Command: Speak message
+    private static void handleSpeak(String message) {
+        if (message.isEmpty()) {
+            System.out.println("Usage: speak <message>");
+            return;
         }
+
+        SpeakPacket speakPacket = new SpeakPacket(message);
+        networkHandler.getConnection(0).sendPacket(speakPacket);
+        System.out.println("Spoken message sent to client: " + message);
     }
 }
