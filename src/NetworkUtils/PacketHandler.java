@@ -4,10 +4,7 @@ import NetworkUtils.Packets.*;
 import Other.Util;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.Arrays;
 
@@ -99,6 +96,8 @@ public class PacketHandler {
     public void onUploadRequest(UploadRequestPacket packet) {
 
     }
+
+
 
     public void onFileChunk(FileChunkPacket packet) {
         connection.addToFileID(packet.getId(), packet.getData());

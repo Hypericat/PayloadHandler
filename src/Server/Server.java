@@ -124,24 +124,24 @@ public class Server {
     }
 
     // Command: Upload (server → client)
-    private static void handleUploadRequest(String arguments) {
+    private static void handleDownloadRequest(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
-            System.out.println("Usage: upload <source_file_on_server> <destination_on_client>");
+            System.out.println("Usage: download <source_file_on_server> <destination_on_client>");
             return;
         }
 
-        String srcFilePath = args[0];
-        String dstFilePath = args[1];
-        String fileName = new File(srcFilePath).getName();
-
-        UploadRequestPacket uploadRequest = new UploadRequestPacket(fileName, srcFilePath, dstFilePath);
+        String fileSrc = args[0];
+        int fileId = networkHandler.getConnection(0).getRandomFileID();
+        UploadRequestPacket uploadRequest = new UploadRequestPacket(fileId, fileSrc);
         networkHandler.getConnection(0).sendPacket(uploadRequest);
-        System.out.println("Server is sending file: " + fileName + " to client.");
+
+        System.out.println("Server is sending file: " + fileSrc + " to client.");
     }
 
+
     // Command: Download (client → server)
-    private static void handleDownloadRequest(String arguments) {
+    private static void handleUploadRequest(String arguments) { // Server sends file to client
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
             System.out.println("Usage: download <source_file_on_client> <destination_on_server>");

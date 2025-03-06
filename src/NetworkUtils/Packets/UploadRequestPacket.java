@@ -6,53 +6,50 @@ import NetworkUtils.PacketHandler;
 
 public class UploadRequestPacket extends Packet {
 
-    private String srcFilePath;  // Source file path on the client
-    private String dstFilePath;  // Destination file path on the server
+    private String fileSrc;  // Only the source path is needed
+    private int id;
 
     public UploadRequestPacket() {
-
     }
 
-    public UploadRequestPacket(String fileName, String srcFilePath, String dstFilePath) {
-        this.srcFilePath = srcFilePath;
-        this.dstFilePath = dstFilePath;
+    public UploadRequestPacket(int id, String fileSrc) {
+        this.id = id;
+        this.fileSrc = fileSrc;
     }
 
     @Override
     public void decode(ByteBuf buf) {
-        this.srcFilePath = buf.readString();  // Decode the source file path from the buffer
-        this.dstFilePath = buf.readString();  // Decode the destination file path from the buffer
+        this.id = buf.readInt();
+        this.fileSrc = buf.readString();  // Decode the source path
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeString(srcFilePath);  // Write the source file path to the buffer
-        buf.writeString(dstFilePath);  // Write the destination file path to the buffer
+        buf.writeInt(id);               // Write file ID
+        buf.writeString(fileSrc);       // Write source path
     }
 
     @Override
     public byte getPacketID() {
-        return 0x08;  // Unique packet ID for UploadRequestPacket
+        return 0x06;  // Unique ID for UploadRequestPacket
     }
 
     @Override
     public String toString() {
-        return "UploadRequestPacket{" +
-                ", srcFilePath='" + srcFilePath + '\'' +
-                ", dstFilePath='" + dstFilePath + '\'' +
-                '}';
+        return "UploadRequestPacket";
     }
 
     @Override
     public void execute(PacketHandler handler) {
-        handler.onUploadRequest(this);  // Execute the handler logic for this packet
+        handler.onUploadRequest(this);
     }
 
-    public String getSrcFilePath() {
-        return this.srcFilePath;
+    // Getters
+    public String getFileSrc() {
+        return this.fileSrc;
     }
 
-    public String getDstFilePath() {
-        return this.dstFilePath;
+    public int getId() {
+        return this.id;
     }
 }
