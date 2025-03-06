@@ -1,4 +1,6 @@
+import NetworkUtils.ByteBuf;
 import NetworkUtils.Packets.AdminPacket;
+import NetworkUtils.Packets.PrintPacket;
 import Server.Server;
 import Client.Client;
 import AdminClient.AdminClient;
@@ -24,6 +26,6 @@ public class Main {
 
         PacketRegistry.registerPacket((byte) 0x00, HandshakePacket.class);
         PacketRegistry.registerPacket((byte) 0x01, AdminPacket.class);
-
+        PacketRegistry.registerPacket((byte) 0x02, PrintPacket.class);
     }
 }

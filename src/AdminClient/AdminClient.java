@@ -3,7 +3,7 @@ package AdminClient;
 import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;  // Correctly reference NetworkUtils
 import NetworkUtils.Packets.AdminPacket;
-import NetworkUtils.IPacket;
+import NetworkUtils.Packet;
 import NetworkUtils.PacketRegistry;
 
 import java.util.Scanner;
@@ -49,7 +49,7 @@ public class AdminClient {
                 // Parse the input packet ID as a hexadecimal number
                 byte packetID = (byte) Integer.parseInt(input, 16);
                 // Use PacketRegistry to create the corresponding packet by packetID
-                IPacket packet = PacketRegistry.createPacket(packetID);
+                Packet packet = PacketRegistry.createPacket(packetID);
                 if (packet == null) {
                     System.out.println("No packet registered with ID: " + input);
                 } else {

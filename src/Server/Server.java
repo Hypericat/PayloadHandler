@@ -1,14 +1,15 @@
 package Server;
 
 import NetworkUtils.NetworkUtil;
+import NetworkUtils.PacketHandler;
 import Server.Networking.ServerNetworkHandler;
-import NetworkUtils.IPacket;
-import NetworkUtils.PacketRegistry;
+import NetworkUtils.Packet;
 
 import java.util.List;
 
 public class Server {
     private static ServerNetworkHandler networkHandler;
+    private static PacketHandler packetHandler;
 
     public static void run() {
         System.out.println("Running server!");
@@ -22,6 +23,8 @@ public class Server {
             break;
         }
         System.out.println("Client connected!");
+        packetHandler = new PacketHandler(networkHandler.getConnection(0));
+
 
 
         while (true) {
@@ -35,9 +38,10 @@ public class Server {
     }
 
     public static void loop() {
-        List<IPacket> packets = networkHandler.getConnection(0).parseReceivedPackets();
-        for (IPacket packet : packets) {
-            System.out.println("Recieved packet : " + packet.toString());
-        }
+        List<Packet> packets = networkHandler.getConnection(0).parseReceivedPackets();
+        packets.forEach(packet -> {
+            System.out.println("Received packet : " + packet.toString());
+            packet.execute(packetHandler);
+        });
     }
 }

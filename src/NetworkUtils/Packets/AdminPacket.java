@@ -1,12 +1,10 @@
 package NetworkUtils.Packets;
 
 import NetworkUtils.ByteBuf;
-import NetworkUtils.IPacket;
+import NetworkUtils.Packet;
+import NetworkUtils.PacketHandler;
 
-public class AdminPacket implements IPacket {
-
-    public AdminPacket() {
-    }
+public class AdminPacket extends Packet {
 
     @Override
     public void decode(ByteBuf buf) {
@@ -26,5 +24,10 @@ public class AdminPacket implements IPacket {
     @Override
     public String toString() {
         return "AdminPacket";
+    }
+
+    @Override
+    public void execute(PacketHandler handler) {
+        handler.onAdmin(this);
     }
 }

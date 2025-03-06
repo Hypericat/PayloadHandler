@@ -1,5 +1,6 @@
 package NetworkUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class ByteBuf {
@@ -30,6 +31,8 @@ public class ByteBuf {
         if (length < 0) throw new IllegalArgumentException("Value 0 for length given!");
         this.buf = Arrays.copyOfRange(buf, start, start + length);
         this.writeable = false;
+        this.writerIndex = length;
+        this.writtenBytes = length;
     }
 
 
@@ -62,10 +65,6 @@ public class ByteBuf {
 
     public int writerIndex() {
         return this.writerIndex;
-    }
-
-    public int readerIndexBytesLeft() {
-        return writtenBytes - readerIndex;
     }
 
     public boolean isReaderIndexLast() {
@@ -124,13 +123,13 @@ public class ByteBuf {
 
 
     public byte readByte() {
-        if (readerIndexBytesLeft() < 1) throw new IndexOutOfBoundsException("Tried to read byte out of bounds of byteBuf!");
+        if (readableBytes() < 1) throw new IndexOutOfBoundsException("Tried to read byte out of bounds of byteBuf!");
         return buf[readerIndex++];
     }
 
     public void readBytes(byte[] dst) {
-        if (readerIndexBytesLeft() < 1) throw new IndexOutOfBoundsException();
-        System.arraycopy(buf, readerIndex, dst, 0, readerIndexBytesLeft());
+        if (readableBytes() < 1) throw new IndexOutOfBoundsException();
+        System.arraycopy(buf, readerIndex, dst, 0, readableBytes());
         readerIndex++;
     }
 
@@ -148,6 +147,23 @@ public class ByteBuf {
         for (byte b : src) {
             writeByte(b);
         }
+    }
+
+    public void writeString(String s) {
+        if (!this.writeable) throw new IllegalStateException("Tried to write non-writeable Bytebuf!");
+        writeInt(s.length());
+        for (byte b : s.getBytes(StandardCharsets.UTF_16)) {
+            writeByte(b);
+        }
+    }
+
+    public String readString() {
+        StringBuilder builder = new StringBuilder();
+        int size = readInt();
+        for (int i = 0; i <= size; i++) {
+            builder.append((char) ((readByte() & 0xff) << 8 | (readByte() & 0xff)));
+        }
+        return builder.toString();
     }
 
     // Make some tests

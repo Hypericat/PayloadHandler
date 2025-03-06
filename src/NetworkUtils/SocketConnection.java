@@ -124,7 +124,7 @@ public class SocketConnection {
         return true;
     }
 
-    public boolean sendPacket(IPacket packet) {
+    public boolean sendPacket(Packet packet) {
         if (!this.isActive()) return false;
         ByteBuf buf = new ByteBuf();
         buf.writeByte(packet.getPacketID());
@@ -138,8 +138,8 @@ public class SocketConnection {
 
 
 
-    public List<IPacket> parseReceivedPackets() {
-        List<IPacket> packets = new ArrayList<>();
+    public List<Packet> parseReceivedPackets() {
+        List<Packet> packets = new ArrayList<>();
         synchronized (incoming) {
             while (this.hasIncoming()) {
                 System.out.println("Found incoming packet");
@@ -152,8 +152,10 @@ public class SocketConnection {
                     if (size > buf.readableBytes()) break;
                     int readerIndex = buf.readerIndex();
                     byte packetID = buf.readByte();
-                    IPacket packet = PacketRegistry.createPacket(packetID);
+                    System.out.println("Packet id: " + packetID);
+                    Packet packet = PacketRegistry.createPacket(packetID);
                     if (packet == null) throw new IllegalArgumentException("Invalid packetID provided!");
+                    System.out.println("Found incoming packet of type : " + packet.toString());
                     packet.decode(new ByteBuf(buf, buf.readerIndex(), size - 1));
                     buf.readerIndex(readerIndex + size);
                     packets.add(packet);

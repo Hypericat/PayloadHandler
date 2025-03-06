@@ -1,13 +1,10 @@
 package NetworkUtils.Packets;
 
 import NetworkUtils.ByteBuf;
-import NetworkUtils.IPacket;
+import NetworkUtils.Packet;
+import NetworkUtils.PacketHandler;
 
-public class HandshakePacket implements IPacket {
-
-    public HandshakePacket() {
-
-    }
+public class HandshakePacket extends Packet {
 
     @Override
     public void decode(ByteBuf buf) {
@@ -26,7 +23,12 @@ public class HandshakePacket implements IPacket {
 
     @Override
     public String toString() {
-        return "Handshake";
+        return "HandshakePacket";
+    }
+
+    @Override
+    public void execute(PacketHandler handler) {
+        handler.onHandshake(this);
     }
 
 

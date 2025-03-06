@@ -2,8 +2,10 @@ package Client;
 
 import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
-import NetworkUtils.IPacket;
+import NetworkUtils.Packet;
+import NetworkUtils.PacketHandler;
 import NetworkUtils.PacketRegistry;
+import NetworkUtils.Packets.PrintPacket;
 
 import java.util.List;
 import java.util.Scanner;
@@ -15,6 +17,7 @@ public class Client {
     public static final int msRetryFinalConnect = secondsRetryConnect * 1000 + msRetryConnect;
 
     private static ClientNetworkHandler networkHandler;
+    private static PacketHandler packetHandler;
 
     public static void run() {
         System.out.println("Running client!");
@@ -33,8 +36,9 @@ public class Client {
             break;
         }
         System.out.println("Established a connection!");
+        packetHandler = new PacketHandler(networkHandler.getConnection());
+        networkHandler.getConnection().sendPacket(new PrintPacket("Ping!"));
 
-        manualPacketSender();
         while (true) {
             try {
                 loop();
@@ -46,40 +50,14 @@ public class Client {
     }
 
     public static void loop() {
-        List<IPacket> packets = networkHandler.getConnection().parseReceivedPackets();
+        List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
+        packets.forEach(packet -> {
+            System.out.println("Received packet : " + packet.toString());
+            packet.execute(packetHandler);
+        });
 
         //networkHandler.getConnection().receive();
         //networkHandler.getConnection().send();
-    }
-
-    // Allows user to manually input packet ID (hexadecimal) and send to server
-    private static void manualPacketSender() {
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            System.out.println("Enter a packet ID (hex) to send (or type 'exit' to quit):");
-            String input = scanner.nextLine();
-            if (input.equalsIgnoreCase("exit")) {
-                break;
-            }
-            try {
-                // Parse the input packet ID as a hexadecimal number
-                byte packetID = (byte) Integer.parseInt(input, 16);
-                // Use PacketRegistry to create the corresponding packet by packetID
-                IPacket packet = PacketRegistry.createPacket(packetID);
-                if (packet == null) {
-                    System.out.println("No packet registered with ID: " + input);
-                } else {
-                    // Send the packet to the server using NetworkUtils
-                    if (networkHandler.getConnection().sendPacket(packet)) {
-                        System.out.println("Sent packet: " + packet);
-                    } else {
-                        System.out.println("Failed to send packet.");
-                    }
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid hexadecimal value.");
-            }
-        }
     }
 
 }
