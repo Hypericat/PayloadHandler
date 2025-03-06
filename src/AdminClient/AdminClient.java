@@ -38,10 +38,9 @@ public class AdminClient {
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
         // Send AdminID packet to server for verification
-        String adminID = "Admin123"; // Replace with your admin ID
+        String adminID = "Winston smells";
+        System.out.println("Sending AdminID: " + adminID + " with length: " + adminID.length());
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
-
-        networkHandler.getConnection().sendPacket(new PrintPacket("Ping!"));
 
         while (true) {
             try {

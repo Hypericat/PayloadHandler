@@ -1,4 +1,4 @@
-import NetworkUtils.Packets.AdminPacket;
+import NetworkUtils.Packets.AdminIDPacket;
 import NetworkUtils.Packets.PrintPacket;
 import NetworkUtils.Packets.WebsitePacket;
 import Server.Server;
@@ -15,7 +15,7 @@ public class Main {
         registerPackets();
 
         // Check if argument "admin" is passed to run Admin Client
-        if (args.length > 0 && args[0].equalsIgnoreCase("admin")) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("-admin")) {
             AdminClient.run();
         } else if (args.length == 0) {
             Client.run();
@@ -29,7 +29,7 @@ public class Main {
         // Register the HandshakePacket with its packet ID
 
         PacketRegistry.registerPacket((byte) 0x00, HandshakePacket.class);
-        PacketRegistry.registerPacket((byte) 0x01, AdminPacket.class);
+        PacketRegistry.registerPacket((byte) 0x01, AdminIDPacket.class);
         PacketRegistry.registerPacket((byte) 0x02, PrintPacket.class);
         PacketRegistry.registerPacket((byte) 0x03, WebsitePacket.class);
     }

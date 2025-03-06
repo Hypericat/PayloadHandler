@@ -18,8 +18,8 @@ public class PacketHandler {
     }
 
     public void onAdminID(AdminIDPacket packet) {
-        String adminID = packet.getAdminID();
-
+        String adminID = packet.getAdminID().trim();
+        System.out.println("Received AdminID: '" + adminID + "' with length: " + adminID.length());
         if (isValidAdmin(adminID)) {
             System.out.println("Admin client connected!");
             connection.sendPacket(new PrintPacket("Admin verified!"));
@@ -28,13 +28,11 @@ public class PacketHandler {
         }
     }
 
+
     private boolean isValidAdmin(String adminID) {
         return adminID.equals("Winston smells");
     }
 
-    public void onAdmin(AdminPacket packet) {
-
-    }
 
     public void onPrint(PrintPacket packet) {
          System.out.println("[Message] : " + packet.getMessage());

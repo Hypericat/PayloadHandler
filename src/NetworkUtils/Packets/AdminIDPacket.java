@@ -7,6 +7,10 @@ import NetworkUtils.PacketHandler;
 public class AdminIDPacket extends Packet {
     private String adminID;
 
+    public AdminIDPacket() {
+
+    }
+
     public AdminIDPacket(String adminID) {
         this.adminID = adminID;
     }
@@ -29,7 +33,7 @@ public class AdminIDPacket extends Packet {
 
     @Override
     public byte getPacketID() {
-        return 0x02; // Unique ID for the AdminID packet
+        return 0x01; // Unique ID for the AdminID packet
     }
 
     @Override
