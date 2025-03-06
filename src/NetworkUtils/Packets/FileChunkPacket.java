@@ -7,25 +7,21 @@ import NetworkUtils.PacketHandler;
 public class FileChunkPacket extends Packet {
 
     private byte[] data;  // The actual chunk of data
-    private long offset;  // The offset of this chunk in the file (useful for uploads)
-    private int operationId;  // Unique ID for the operation
+    private int id;  // Unique ID for the operation
 
     // Default constructor
     public FileChunkPacket() {
     }
 
     // Constructor to initialize with chunk data, offset, and operationId
-    public FileChunkPacket(byte[] data, long offset, int operationId) {
+    public FileChunkPacket(byte[] data, int id) {
         this.data = data;
-        this.offset = offset;
-        this.operationId = operationId;
+        this.id = id;
     }
 
     @Override
     public void decode(ByteBuf buf) {
-        this.operationId = buf.readInt();  // Read the operation ID
-        this.offset = buf.readInt();
-
+        this.id = buf.readInt();  // Read the operation ID
         int dataLength = buf.readInt();  // Read the length of the byte array
         this.data = new byte[dataLength];
 
@@ -36,9 +32,7 @@ public class FileChunkPacket extends Packet {
 
     @Override
     public void encode(ByteBuf buf) {
-
-        buf.writeInt(operationId);
-        buf.writeInt((int) offset);
+        buf.writeInt(id);
         buf.writeInt(data.length);
         for (byte b : data) {
             buf.writeByte(b);
@@ -64,11 +58,8 @@ public class FileChunkPacket extends Packet {
         return this.data;
     }
 
-    public long getOffset() {
-        return this.offset;
-    }
 
-    public int getOperationId() {
-        return this.operationId;
+    public int getId() {
+        return this.id;
     }
 }

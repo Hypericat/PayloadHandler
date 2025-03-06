@@ -6,28 +6,24 @@ import NetworkUtils.PacketHandler;
 
 public class FileCompletePacket extends Packet {
 
-    private String fileName;
-    private int operationId;
+    private int id;
 
     public FileCompletePacket() {
 
     }
 
-    public FileCompletePacket(String fileName, int operationId) {
-        this.fileName = fileName;
-        this.operationId = operationId;
+    public FileCompletePacket(int id) {
+        this.id = id;
     }
 
     @Override
     public void decode(ByteBuf buf) {
-        this.fileName = buf.readString();
-        this.operationId = buf.readInt();
+        this.id = buf.readInt();
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeString(fileName);
-        buf.writeInt(operationId);
+        buf.writeInt(id);
     }
 
     @Override
@@ -45,11 +41,7 @@ public class FileCompletePacket extends Packet {
         handler.onFileComplete(this);
     }
 
-    public String getFileName() {
-        return this.fileName;
-    }
-
-    public int getOperationId() {
-        return this.operationId;
+    public int getId() {
+        return this.id;
     }
 }

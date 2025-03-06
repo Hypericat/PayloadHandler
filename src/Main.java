@@ -29,5 +29,8 @@ public class Main {
         PacketRegistry.registerPacket((byte) 0x03, WebsitePacket.class);
         PacketRegistry.registerPacket((byte) 0x04, SpeakPacket.class);
         PacketRegistry.registerPacket((byte) 0x05, FileUploadStartPacket.class);
+        PacketRegistry.registerPacket((byte) 0x06, FileChunkPacket.class);
+        PacketRegistry.registerPacket((byte) 0x07, FileCompletePacket.class);
+        PacketRegistry.registerPacket((byte) 0x08, UploadRequestPacket.class);
     }
 }

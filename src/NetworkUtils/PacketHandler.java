@@ -5,6 +5,9 @@ import Other.Util;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
@@ -46,6 +49,7 @@ public class PacketHandler {
     public void onUploadStart(FileUploadStartPacket packet) {
         // Register the file upload task
         connection.registerFileID(packet);
+        System.out.println("Starting upload for id : " + packet.getId());
     }
 
     public void onWebsite(WebsitePacket packet) {
@@ -86,30 +90,38 @@ public class PacketHandler {
     }
 
     public void onUploadRequest(UploadRequestPacket packet) {
-        String fileName = packet.getFileName();
-        int fileSize = packet.getFileSize();
-        System.out.println("Ready to upload file: " + fileName + " (" + fileSize + " bytes)");
-        connection.sendPacket(new PrintPacket("Ready to upload file: " + fileName));
+
     }
 
     public void onFileChunk(FileChunkPacket packet) {
-        int operationId = packet.getOperationId();
-
-        // Add the received chunk to the corresponding file upload
-        byte[] data = packet.getData();
-        long offset = packet.getOffset();
-
-        // Add chunk to the file in the active uploads map
-        connection.addToFileID(operationId, data);
-        System.out.println("Received chunk at offset: " + offset + " for operation ID: " + operationId);
+        connection.addToFileID(packet.getId(), packet.getData());
+        System.out.println("Received chunk for id : " + packet.getId());
     }
 
     // File upload/download is complete
     public void onFileComplete(FileCompletePacket packet) {
-        int operationId = packet.getOperationId();
-        connection.finishFileID(operationId);
+        FileTask task = connection.finishFileID(packet.getId());
+        System.out.println("File operation id : " + packet + " completed and removed from active uploads.");
 
-        // Can remove the operation from activeUploads in case finishFileID doesn't
-        System.out.println("File operation " + operationId + " completed and removed from active uploads.");
+        String fullPath = task.getFilePath() + "\\" + task.getFileName();
+        File file = new File(fullPath);
+        FileOutputStream writer;
+        try {
+            file.createNewFile();
+            writer = new FileOutputStream(file, true);
+        } catch (Exception e) {
+            System.err.println("Failed to create/find file : " + fullPath);
+            return;
+        }
+        try {
+            for (byte[] b : task.data) {
+                writer.write(b);
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Failed to write to file : " + fullPath);
+            return;
+        }
+        System.out.println("Successfully saved file to : " + file.getPath());
     }
 }
