@@ -16,15 +16,21 @@ public class NetworkUtil {
     public static final String serverDDNS = "winstonchurchili.ddns.net";
     public static final int dataPacketByteSize = 1200;
 
-    public static void uploadFile(File file, String dst, SocketConnection connection) {
+    public static boolean uploadFile(File file, String dst, SocketConnection connection) {
+        return uploadFile(file, dst, connection.getRandomFileID(), connection);
+    }
+    public static boolean uploadFile(File file, String dst, int id, SocketConnection connection) {
         String name = file.getName();
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(file.toPath());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return false;
         }
-        FileUploadStartPacket packet = new FileUploadStartPacket(name, dst, connection.getRandomFileID());
+        if (!file.exists()) return false;
+        if (!file.isFile()) return false;
+
+        FileUploadStartPacket packet = new FileUploadStartPacket(name, dst, id);
         connection.sendPacket(packet);
         for(int i = 0; i < bytes.length; i += dataPacketByteSize){
             byte[] array = Arrays.copyOfRange(bytes, i, Math.min(bytes.length,i + dataPacketByteSize));
@@ -34,5 +40,6 @@ public class NetworkUtil {
 
         FileCompletePacket completePacket = new FileCompletePacket(packet.getId());
         connection.sendPacket(completePacket);
+        return true;
     }
 }
