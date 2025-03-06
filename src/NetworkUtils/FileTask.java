@@ -5,13 +5,13 @@ import java.util.List;
 
 public class FileTask {
     List<byte[]> data = new ArrayList<>();
-    String fileName;
-    String filePath;
+    String fileDst;
+    String fileSrc;
     int id;
 
-    public FileTask(String fileName, String filePath, int id) {
-        this.fileName = fileName;
-        this.filePath = filePath;
+    public FileTask(String fileSrc, String fileDst, int id) {
+        this.fileDst = fileDst;
+        this.fileSrc = fileSrc;
         this.id = id;
     }
 
@@ -23,12 +23,12 @@ public class FileTask {
         return data;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFileDst() {
+        return fileDst;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileSrc() {
+        return fileSrc;
     }
 
     public int getId() {

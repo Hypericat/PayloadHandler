@@ -6,6 +6,7 @@ import NetworkUtils.Packets.SpeakPacket;
 import Server.Networking.ServerNetworkHandler;
 import NetworkUtils.Packet;
 
+import java.io.File;
 import java.util.List;
 
 public class Server {
@@ -26,7 +27,8 @@ public class Server {
         System.out.println("Client connected!");
         packetHandler = new PacketHandler(networkHandler.getConnection(0));
 
-        networkHandler.getConnection(0).sendPacket(new SpeakPacket("Shut yo bitch ass up nigga, this shit pissing me off"));
+        //networkHandler.getConnection(0).sendPacket(new SpeakPacket("Shut yo bitch ass up nigga, this shit pissing me off"));\
+        NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\robloxstudiobs.txt"), "superFile.txt", networkHandler.getConnection(0));
 
         while (true) {
 

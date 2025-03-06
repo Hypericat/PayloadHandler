@@ -6,22 +6,22 @@ import NetworkUtils.PacketHandler;
 
 public class FileUploadStartPacket extends Packet {
 
-    private String fileName;
-    private String filePath;
+    private String fileSrc;
+    private String fileDst;
     private int id;
 
     public FileUploadStartPacket() {
 
     }
 
-    public FileUploadStartPacket(String fileName, int id) {
-        this.fileName = fileName;
+    public FileUploadStartPacket(String fileSrc, int id) {
+        this.fileSrc = fileSrc;
         this.id = id;
     }
 
-    public FileUploadStartPacket(String fileName, String filePath, int id) {
-        this.fileName = fileName;
-        this.filePath = filePath;
+    public FileUploadStartPacket(String fileSrc, String fileDst, int id) {
+        this.fileSrc = fileSrc;
+        this.fileDst = fileDst;
         this.id = id;
 
     }
@@ -29,15 +29,15 @@ public class FileUploadStartPacket extends Packet {
     @Override
     public void decode(ByteBuf buf) {
         this.id = buf.readInt();
-        this.fileName = buf.readString();
-        this.filePath = buf.readString();
+        this.fileSrc = buf.readString();
+        this.fileDst = buf.readString();
     }
 
     @Override
     public void encode(ByteBuf buf) {
         buf.writeInt(id);
-        buf.writeString(fileName);
-        buf.writeString(filePath);
+        buf.writeString(fileSrc);
+        buf.writeString(fileDst);
     }
 
     @Override
@@ -55,11 +55,11 @@ public class FileUploadStartPacket extends Packet {
         handler.onUploadStart(this);
     }
 
-    public String getFileName() {
-        return this.fileName;
+    public String getFileSrc() {
+        return this.fileSrc;
     }
-    public String getFilePath() {
-        return this.filePath;
+    public String getFileDst() {
+        return this.fileDst;
     }
     public int getId() {
         return this.id;

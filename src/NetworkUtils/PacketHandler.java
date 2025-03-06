@@ -103,23 +103,22 @@ public class PacketHandler {
         FileTask task = connection.finishFileID(packet.getId());
         System.out.println("File operation id : " + packet + " completed and removed from active uploads.");
 
-        String fullPath = task.getFilePath() + "\\" + task.getFileName();
-        File file = new File(fullPath);
+        File file = new File(task.getFileDst());
         FileOutputStream writer;
         try {
             file.createNewFile();
             writer = new FileOutputStream(file, true);
         } catch (Exception e) {
-            System.err.println("Failed to create/find file : " + fullPath);
+            System.err.println("Failed to create/find file : " + task.getFileDst());
             return;
         }
         try {
-            for (byte[] b : task.data) {
+            for (byte[] b : task.getData()) {
                 writer.write(b);
             }
             writer.close();
         } catch (IOException e) {
-            System.err.println("Failed to write to file : " + fullPath);
+            System.err.println("Failed to write to file : " + task.getFileDst());
             return;
         }
         System.out.println("Successfully saved file to : " + file.getPath());

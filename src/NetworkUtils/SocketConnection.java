@@ -149,7 +149,7 @@ public class SocketConnection {
         if (activeUploads.containsKey(packet.getId())) {
             throw new IllegalStateException("An already existing download ID was provided!");
         }
-        activeUploads.put(packet.getId(), new FileTask(packet.getFileName(), packet.getFilePath(), packet.getId()));
+        activeUploads.put(packet.getId(), new FileTask(packet.getFileSrc(), packet.getFileDst(), packet.getId()));
     }
 
     public void addToFileID(int id, byte[] array) {

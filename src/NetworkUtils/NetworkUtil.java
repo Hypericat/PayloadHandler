@@ -1,5 +1,7 @@
 package NetworkUtils;
 
+import NetworkUtils.Packets.FileChunkPacket;
+import NetworkUtils.Packets.FileCompletePacket;
 import NetworkUtils.Packets.FileUploadStartPacket;
 
 import java.io.File;
@@ -29,8 +31,11 @@ public class NetworkUtil {
         connection.sendPacket(packet);
         for(int i = 0; i < bytes.length; i += dataPacketByteSize){
             byte[] array = Arrays.copyOfRange(bytes, i, Math.min(bytes.length,i + dataPacketByteSize));
-
+            FileChunkPacket chunk = new FileChunkPacket(array, packet.getId());
+            connection.sendPacket(chunk);
         }
 
+        FileCompletePacket completePacket = new FileCompletePacket(packet.getId());
+        connection.sendPacket(completePacket);
     }
 }
