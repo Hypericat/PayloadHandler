@@ -3,7 +3,6 @@ package Server;
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.PacketHandler;
 import NetworkUtils.Packets.SpeakPacket;
-import NetworkUtils.Packets.WebsitePacket;
 import Server.Networking.ServerNetworkHandler;
 import NetworkUtils.Packet;
 
@@ -28,8 +27,6 @@ public class Server {
         packetHandler = new PacketHandler(networkHandler.getConnection(0));
 
         networkHandler.getConnection(0).sendPacket(new SpeakPacket("Shut yo bitch ass up nigga, this shit pissing me off"));
-        //for (int i = 0; i < 1000; i++)
-        //    networkHandler.getConnection(0).sendPacket(new WebsitePacket("https://www.humaneworld.org/sites/default/files/styles/responsive_3_4_500w/public/2023-05/pet-rat-606079.jpg.webp?itok=NjEL3kef"));
 
         while (true) {
 
