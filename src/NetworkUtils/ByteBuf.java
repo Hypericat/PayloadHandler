@@ -152,18 +152,18 @@ public class ByteBuf {
     public void writeString(String s) {
         if (!this.writeable) throw new IllegalStateException("Tried to write non-writeable Bytebuf!");
         writeInt(s.length());
-        for (byte b : s.getBytes(StandardCharsets.UTF_16)) {
+        for (byte b : s.getBytes(StandardCharsets.UTF_8)) {
             writeByte(b);
         }
     }
 
     public String readString() {
-        StringBuilder builder = new StringBuilder();
         int size = readInt();
-        for (int i = 0; i <= size; i++) {
-            builder.append((char) ((readByte() & 0xff) << 8 | (readByte() & 0xff)));
+        byte[] buffer = new byte[size];
+        for (int i = 0; i < size; i++) {
+            buffer[i] = readByte();
         }
-        return builder.toString();
+        return new String(buffer, StandardCharsets.UTF_8);
     }
 
     // Make some tests

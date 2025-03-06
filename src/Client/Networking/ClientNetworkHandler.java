@@ -26,7 +26,6 @@ public class ClientNetworkHandler {
 
             connection = new SocketConnection(socket);
 
-            System.out.println("Connected to the server.");
         } catch (IOException e) {
             return false;
         }

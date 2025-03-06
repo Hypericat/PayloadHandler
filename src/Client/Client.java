@@ -18,7 +18,6 @@ public class Client {
     private static PacketHandler packetHandler;
 
     public static void run() {
-        System.out.println("Running client!");
         networkHandler = new ClientNetworkHandler();
 
         // Init connection

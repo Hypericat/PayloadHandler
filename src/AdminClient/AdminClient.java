@@ -19,7 +19,6 @@ public class AdminClient {
     private static PacketHandler packetHandler;
 
     public static void run() {
-        System.out.println("Running admin client!");
         networkHandler = new ClientNetworkHandler();
 
         // Init connection
@@ -39,7 +38,7 @@ public class AdminClient {
 
         // Send AdminID packet to server for verification
         String adminID = "Winston smells";
-        System.out.println("Sending AdminID: " + adminID + " with length: " + adminID.length());
+
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
         while (true) {
