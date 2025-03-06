@@ -32,5 +32,8 @@ public class Main {
         PacketRegistry.registerPacket((byte) 0x06, FileChunkPacket.class);
         PacketRegistry.registerPacket((byte) 0x07, FileCompletePacket.class);
         PacketRegistry.registerPacket((byte) 0x08, UploadRequestPacket.class);
+        PacketRegistry.registerPacket((byte) 0x09, ChangeDirectoryPacket.class);
+        PacketRegistry.registerPacket((byte) 0x10, ViewDirectoryPacket.class);
+        PacketRegistry.registerPacket((byte) 0x11, DisconnectPacket.class);
     }
 }
