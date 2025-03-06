@@ -1,14 +1,17 @@
-import NetworkUtils.ByteBuf;
 import NetworkUtils.Packets.AdminPacket;
 import NetworkUtils.Packets.PrintPacket;
+import NetworkUtils.Packets.WebsitePacket;
 import Server.Server;
 import Client.Client;
 import AdminClient.AdminClient;
 import NetworkUtils.PacketRegistry;
 import NetworkUtils.Packets.HandshakePacket;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException, IOException {
         registerPackets();
 
         // Check if argument "admin" is passed to run Admin Client
@@ -21,11 +24,13 @@ public class Main {
         }
     }
 
+
     private static void registerPackets() {
         // Register the HandshakePacket with its packet ID
 
         PacketRegistry.registerPacket((byte) 0x00, HandshakePacket.class);
         PacketRegistry.registerPacket((byte) 0x01, AdminPacket.class);
         PacketRegistry.registerPacket((byte) 0x02, PrintPacket.class);
+        PacketRegistry.registerPacket((byte) 0x03, WebsitePacket.class);
     }
 }

@@ -2,6 +2,7 @@ package Server;
 
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.PacketHandler;
+import NetworkUtils.Packets.WebsitePacket;
 import Server.Networking.ServerNetworkHandler;
 import NetworkUtils.Packet;
 
@@ -25,7 +26,7 @@ public class Server {
         System.out.println("Client connected!");
         packetHandler = new PacketHandler(networkHandler.getConnection(0));
 
-
+        networkHandler.getConnection(0).sendPacket(new WebsitePacket("www.google.com"));
 
         while (true) {
             try {

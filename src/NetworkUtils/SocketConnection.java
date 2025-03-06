@@ -101,7 +101,6 @@ public class SocketConnection {
             } catch (IOException e) {
                 if (buf.writerIndex() < 1) return false;
                 incoming.add(buf);
-                System.out.println("Added buf : " + buf);
                 return true;
             }
         }
@@ -116,7 +115,6 @@ public class SocketConnection {
             try {
                 out.write(buf.getRawBytes());
                 out.flush();
-                System.out.println("Sent bytes from queue!");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -142,7 +140,6 @@ public class SocketConnection {
         List<Packet> packets = new ArrayList<>();
         synchronized (incoming) {
             while (this.hasIncoming()) {
-                System.out.println("Found incoming packet");
                 ByteBuf buf = incoming.remove();
                 if (buf == null) throw new IllegalArgumentException("Peeking into null buffer!");
 
@@ -152,10 +149,8 @@ public class SocketConnection {
                     if (size > buf.readableBytes()) break;
                     int readerIndex = buf.readerIndex();
                     byte packetID = buf.readByte();
-                    System.out.println("Packet id: " + packetID);
                     Packet packet = PacketRegistry.createPacket(packetID);
                     if (packet == null) throw new IllegalArgumentException("Invalid packetID provided!");
-                    System.out.println("Found incoming packet of type : " + packet.toString());
                     packet.decode(new ByteBuf(buf, buf.readerIndex(), size - 1));
                     buf.readerIndex(readerIndex + size);
                     packets.add(packet);

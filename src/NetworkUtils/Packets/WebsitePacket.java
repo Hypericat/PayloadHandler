@@ -4,44 +4,43 @@ import NetworkUtils.ByteBuf;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
 
-public class PrintPacket extends Packet {
-
-    private String message;
-    public PrintPacket() {
+public class WebsitePacket extends Packet {
+    private String url;
+    public WebsitePacket() {
 
     }
 
-    public PrintPacket(String message) {
-        this.message = message;
+    public WebsitePacket(String message) {
+        this.url = message;
     }
 
     @Override
     public void decode(ByteBuf buf) {
-        this.message = buf.readString();
+        this.url = buf.readString();
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeString(message);
+        buf.writeString(url);
     }
 
     @Override
     public byte getPacketID() {
-        return 0x02;
+        return 0x03;
     }
 
     @Override
     public String toString() {
-        return "PrintPacket";
+        return "WebsitePacket";
     }
 
     @Override
     public void execute(PacketHandler handler) {
-        handler.onPrint(this);
+        handler.onWebsite(this);
     }
 
-    public String getMessage() {
-        return this.message;
+    public String getUrl() {
+        return this.url;
     }
 
 
