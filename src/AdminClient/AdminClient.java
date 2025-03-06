@@ -6,7 +6,10 @@ import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
 import NetworkUtils.Packets.AdminIDPacket;
 import NetworkUtils.Packets.PrintPacket;
+import NetworkUtils.Packets.AdminCommandPacket;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class AdminClient {
@@ -25,26 +28,40 @@ public class AdminClient {
             if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {
                 System.out.println("Connection failed. Attempting to reconnect...");
                 try {
-                    Thread.sleep(msRetryFinalConnect); // Suspend execution
+                    Thread.sleep(msRetryFinalConnect);
                 } catch (InterruptedException ignored) {
                 }
                 continue;
             }
             break;
         }
+
         System.out.println("Established a connection!");
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
-
+        // Send Admin ID to the server for verification
         String adminID = "admin123";
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
+        // Start CLI loop for sending commands
+        startAdminCLI();
+    }
+
+    public static void startAdminCLI() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
         while (true) {
             try {
-                loop();
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                System.out.println("Enter command to send to server:");
+                String command = reader.readLine().trim();
+                if (command.isEmpty()) continue;
+
+                // Send the command to the server
+                AdminCommandPacket adminCommandPacket = new AdminCommandPacket(command);
+                networkHandler.getConnection().sendPacket(adminCommandPacket);
+                System.out.println("Command sent to server: " + command);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -52,26 +69,15 @@ public class AdminClient {
     public static void loop() {
         List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
 
-        if (packets.isEmpty()) {
-            System.out.println("No packets received, waiting for server response...");
-        }
-
         packets.forEach(packet -> {
             System.out.println("Received packet: " + packet.toString());
 
             if (packet instanceof PrintPacket) {
                 PrintPacket printPacket = (PrintPacket) packet;
-                String message = printPacket.getMessage();
-                System.out.println("Server Response: " + message);
-
-                if (message.contains("Invalid Admin ID")) {
-                    System.out.println("Admin authentication failed. Closing client...");
-                    System.exit(1);
-                }
+                System.out.println("Server Response: " + printPacket.getMessage());
             }
 
             packet.execute(packetHandler);
         });
     }
-
 }
