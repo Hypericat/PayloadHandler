@@ -40,7 +40,7 @@ public class AdminClient {
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
         // Send Admin ID to the server for verification
-        String adminID = "admin123";
+        String adminID = "Winston smells";
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
         // Start CLI loop for sending commands
