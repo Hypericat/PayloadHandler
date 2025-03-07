@@ -6,9 +6,11 @@ import Server.Networking.ServerClient;
 import Server.Networking.ServerNetworkHandler;
 import NetworkUtils.Packet;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.List;
 
@@ -34,14 +36,12 @@ public class Server {
                     continue;
                 }
                 System.out.println("Found a connection!");
+                startCLI();
             }
         });
 
         connectionChecker.start();
 
-        Thread cliThread = new Thread(() -> startCLI());
-        // Start CLI interface for server commands on new thread
-        cliThread.start();
         while (true) {
             try {
                 loop();
@@ -63,7 +63,6 @@ public class Server {
 
     public static void loop() {
         networkHandler.getClients().forEach(client -> {
-
             if (!client.getConnection().isActive()) {
                 System.out.println("Inactive socket found!");
             }
@@ -76,8 +75,12 @@ public class Server {
         });
     }
 
-    // CLI for handling server commands
     public static void startCLI() {
+        if (networkHandler.getConnectionCount() == 0) {
+            System.out.println("No clients connected. Waiting for connections...");
+            return;
+        }
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         while (true) {
@@ -93,18 +96,19 @@ public class Server {
         }
     }
 
-    // 🚀 Now used for both CLI and Admin Commands!
     public static void processCommand(String input) {
-        String[] parts = input.split(" ", 3);  // Allow for client ID
+        String[] parts = input.split(" ", 3);
         String command = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
-        int clientId = parts.length > 2 ? Integer.parseInt(parts[2]) : -1;  // Get client ID if provided
+        int clientId = parts.length > 2 ? Integer.parseInt(parts[2]) : -1;
 
-        // If clientId is specified, get that client, otherwise use the selected client
-        setSelectedClient((clientId > 0) ? networkHandler.getClientById(clientId) : selectedClient);
+        if (command.equals("useid") && arguments.length() > 0) {
+            useClientById(arguments);
+            return;
+        }
 
         if (selectedClient == null) {
-            System.out.println("Invalid client ID or no client selected.");
+            System.out.println("No client selected. Use 'useid <clientID>' to select a client.");
             return;
         }
 
@@ -130,9 +134,43 @@ public class Server {
             case "speak":
                 handleSpeak(arguments);
                 break;
+            case "listconnectedclients":
+                listConnectedClients();
+                break;
             default:
                 System.out.println("Unknown command! Try again.");
                 break;
+        }
+    }
+
+    private static void listConnectedClients() {
+        System.out.println("Connected Clients:");
+        networkHandler.getClients().forEach(client -> {
+            try {
+                InetAddress clientAddress = client.getConnection().getSocket().getInetAddress();
+                String clientIP = clientAddress.getHostAddress();
+                String clientName = clientAddress.getHostName();
+                int clientId = client.getId();
+
+                System.out.println("ID: " + clientId + " | IP: " + clientIP + " | PC Name: " + clientName);
+            } catch (Exception e) {
+                System.out.println("Error retrieving client information: " + e.getMessage());
+            }
+        });
+    }
+
+    private static void useClientById(String clientIdStr) {
+        try {
+            int clientId = Integer.parseInt(clientIdStr);
+            ServerClient client = networkHandler.getClientById(clientId);
+            if (client != null) {
+                setSelectedClient(client);
+                System.out.println("Client with ID " + clientId + " selected.");
+            } else {
+                System.out.println("No client found with ID: " + clientId);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid client ID format.");
         }
     }
 
@@ -151,7 +189,6 @@ public class Server {
         System.out.println("Changing directory to: " + newPath);
     }
 
-    // Command: Download (client → server)
     private static void handleDownloadRequest(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
@@ -168,7 +205,6 @@ public class Server {
         System.out.println("Server is requesting file: " + fileSrc + " from client.");
     }
 
-    // Command: Upload (server → client)
     private static void handleUpload(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {

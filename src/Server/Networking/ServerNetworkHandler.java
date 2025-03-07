@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.stream.Stream;
 
 public class ServerNetworkHandler {
-    private final HashMap<SocketConnection, ServerClient> connections = new HashMap<>();
+    private static final HashMap<SocketConnection, ServerClient> connections = new HashMap<>();
     private int nextClientId = 1;
     private ServerSocket serverSocket;
 
@@ -32,7 +32,7 @@ public class ServerNetworkHandler {
         return true;
     }
 
-    public ServerClient getClientById(int clientId) {
+    public static ServerClient getClientById(int clientId) {
         for (ServerClient client : connections.values()) {
             if (client.getId() == clientId) {
                 return client;
@@ -40,6 +40,7 @@ public class ServerNetworkHandler {
         }
         return null;
     }
+
 
     public int getConnectionCount() {
         return this.connections.size();

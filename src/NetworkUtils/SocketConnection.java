@@ -46,7 +46,7 @@ public class SocketConnection {
         }
     }
 
-    private Socket getSocket() {
+    public Socket getSocket() {
         return socket;
     }
 
