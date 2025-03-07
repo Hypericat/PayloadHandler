@@ -98,7 +98,6 @@ public class Server {
         String[] parts = input.split(" ", 3);
         String command = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
-        int clientId = parts.length > 2 ? Integer.parseInt(parts[2]) : -1;
 
         if (command.equals("useid") && arguments.length() > 0) {
             useClientById(arguments);
