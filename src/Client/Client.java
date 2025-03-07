@@ -4,8 +4,10 @@ import Client.Networking.ClientNetworkHandler;
 import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
+import NetworkUtils.Packets.HandshakePacket;
 import NetworkUtils.Packets.PrintPacket;
 
+import java.io.File;
 import java.util.List;
 
 public class Client {
@@ -34,7 +36,8 @@ public class Client {
         }
         System.out.println("Established a connection!");
         packetHandler = new PacketHandler(networkHandler.getConnection());
-        networkHandler.getConnection().sendPacket(new PrintPacket("Ping!"));
+
+        networkHandler.getConnection().sendPacket(new HandshakePacket(new File(System.getProperty("user.home")).getName()));
 
         while (true) {
             try {

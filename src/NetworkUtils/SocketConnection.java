@@ -1,6 +1,7 @@
 package NetworkUtils;
 
 import NetworkUtils.Packets.FileUploadStartPacket;
+import Server.Networking.ServerClient;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +13,7 @@ public class SocketConnection {
     private final DataOutputStream out;
     private final Queue<ByteBuf> incoming;
     private final Queue<ByteBuf> outgoing;
+    private ServerClient serverClient;
 
     private final HashMap<Integer, FileTask> activeUploads = new HashMap<>();
 
@@ -36,6 +38,18 @@ public class SocketConnection {
 
         outgoingThread.start();
         incomingThread.start();
+    }
+
+    public void setServerClient(ServerClient serverClient) {
+        this.serverClient = serverClient;
+    }
+
+    public boolean hasServerClient() {
+        return this.serverClient != null;
+    }
+
+    public ServerClient getServerClient() {
+        return this.serverClient;
     }
 
     public boolean isActive() {

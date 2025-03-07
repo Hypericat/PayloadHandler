@@ -9,14 +9,17 @@ public class ServerClient {
     private final ServerNetworkHandler networkHandler;
     private final SocketConnection connection;
     private final int id;
-    private String userFolder;
+    private String userFolder = null;
 
-    public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler, int id, String userFolder) {
+    public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler, int id) {
         this.packetHandler = new PacketHandler(connection);
         this.networkHandler = networkHandler;
         this.connection = connection;
         this.id = id;
-        this.userFolder = this.userFolder;
+    }
+
+    public void setUserFolder(String userFolder) {
+        this.userFolder = userFolder;
     }
 
     public String getUserFolder() {

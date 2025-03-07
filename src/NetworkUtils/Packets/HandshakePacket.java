@@ -6,18 +6,24 @@ import NetworkUtils.PacketHandler;
 
 public class HandshakePacket extends Packet {
 
+    String path;
+
     public HandshakePacket() {
 
     }
 
+    public HandshakePacket(String userFolderPath) {
+        this.path = userFolderPath;
+    }
+
     @Override
     public void decode(ByteBuf buf) {
-
+         this.path = buf.readString();
     }
 
     @Override
     public void encode(ByteBuf buf) {
-
+        buf.writeString(path);
     }
 
     @Override
@@ -35,5 +41,7 @@ public class HandshakePacket extends Packet {
         handler.onHandshake(this);
     }
 
-
+    public String getPath() {
+        return path;
+    }
 }

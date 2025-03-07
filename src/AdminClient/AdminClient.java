@@ -6,6 +6,7 @@ import NetworkUtils.NetworkUtil;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
 import NetworkUtils.Packets.AdminIDPacket;
+import NetworkUtils.Packets.HandshakePacket;
 import NetworkUtils.Packets.PrintPacket;
 import NetworkUtils.Packets.AdminCommandPacket;
 import Server.Networking.ServerClient;
@@ -13,6 +14,7 @@ import Server.Networking.ServerNetworkHandler;
 import Server.Server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -45,6 +47,8 @@ public class AdminClient {
 
         String adminID = "Winston smells";
         networkHandler.getConnection().sendPacket(new AdminIDPacket(adminID));
+        networkHandler.getConnection().sendPacket(new HandshakePacket(new File(System.getProperty("user.home")).getName()));
+
 
         startAdminCLI();
     }

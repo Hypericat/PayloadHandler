@@ -7,6 +7,7 @@ import NetworkUtils.PacketRegistry;
 
 public class Main {
     public static void main(String[] args) {
+
         registerPackets();
 
         // Check if argument "admin" is passed to run Admin Client

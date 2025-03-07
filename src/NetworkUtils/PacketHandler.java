@@ -17,7 +17,8 @@ public class PacketHandler {
     }
 
     public void onHandshake(HandshakePacket packet) {
-
+        if (!connection.hasServerClient()) return;
+        connection.getServerClient().setUserFolder(packet.getPath());
     }
 
     public void onDisconnect(DisconnectPacket packet) {
