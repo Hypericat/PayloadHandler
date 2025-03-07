@@ -57,8 +57,17 @@ public class Server {
         selectedClient = client;
     }
 
+    public static ServerClient getSelectedClient() {
+        return selectedClient;
+    }
+
     public static void loop() {
         networkHandler.getClients().forEach(client -> {
+
+            if (!client.getConnection().isActive()) {
+                System.out.println("Inactive socket found!");
+            }
+
             List<Packet> packets = client.getConnection().parseReceivedPackets();
             packets.forEach(packet -> {
                 System.out.println("Received packet: " + packet.toString());
@@ -92,34 +101,34 @@ public class Server {
         int clientId = parts.length > 2 ? Integer.parseInt(parts[2]) : -1;  // Get client ID if provided
 
         // If clientId is specified, get that client, otherwise use the selected client
-        ServerClient targetClient = (clientId > 0) ? networkHandler.getClientById(clientId) : selectedClient;
+        setSelectedClient((clientId > 0) ? networkHandler.getClientById(clientId) : selectedClient);
 
-        if (targetClient == null) {
+        if (selectedClient == null) {
             System.out.println("Invalid client ID or no client selected.");
             return;
         }
 
         switch (command) {
             case "view":
-                viewDirectory(targetClient);
+                viewDirectory();
                 break;
             case "change":
-                changeDirectory(arguments, targetClient);
+                changeDirectory(arguments);
                 break;
             case "upload":
-                handleUpload(arguments, targetClient);
+                handleUpload(arguments);
                 break;
             case "download":
-                handleDownloadRequest(arguments, targetClient);
+                handleDownloadRequest(arguments);
                 break;
             case "print":
-                handlePrint(arguments, targetClient);
+                handlePrint(arguments);
                 break;
             case "website":
-                handleWebsite(arguments, targetClient);
+                handleWebsite(arguments);
                 break;
             case "speak":
-                handleSpeak(arguments, targetClient);
+                handleSpeak(arguments);
                 break;
             default:
                 System.out.println("Unknown command! Try again.");
@@ -127,23 +136,23 @@ public class Server {
         }
     }
 
-    private static void viewDirectory(ServerClient targetClient) {
+    private static void viewDirectory() {
         String currentDirectory = System.getProperty("user.dir");
         System.out.println("Current Directory: " + currentDirectory);
-        targetClient.getConnection().sendPacket(new ViewDirectoryPacket(currentDirectory));
+        selectedClient.getConnection().sendPacket(new ViewDirectoryPacket(currentDirectory));
     }
 
-    private static void changeDirectory(String newPath, ServerClient targetClient) {
+    private static void changeDirectory(String newPath) {
         if (newPath.isEmpty()) {
             System.out.println("Usage: change <directory_path>");
             return;
         }
-        targetClient.getConnection().sendPacket(new ChangeDirectoryPacket(newPath));
+        selectedClient.getConnection().sendPacket(new ChangeDirectoryPacket(newPath));
         System.out.println("Changing directory to: " + newPath);
     }
 
     // Command: Download (client → server)
-    private static void handleDownloadRequest(String arguments, ServerClient targetClient) {
+    private static void handleDownloadRequest(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
             System.out.println("Usage: download <source_file_on_server> <destination_on_client>");
@@ -152,52 +161,52 @@ public class Server {
 
         String fileSrc = args[0];
         String fileDst = args[1];
-        int fileId = targetClient.getConnection().getRandomFileID();
+        int fileId = selectedClient.getConnection().getRandomFileID();
         UploadRequestPacket uploadRequest = new UploadRequestPacket(fileId, fileSrc, fileDst);
-        targetClient.getConnection().sendPacket(uploadRequest);
+        selectedClient.getConnection().sendPacket(uploadRequest);
 
         System.out.println("Server is requesting file: " + fileSrc + " from client.");
     }
 
     // Command: Upload (server → client)
-    private static void handleUpload(String arguments, ServerClient targetClient) {
+    private static void handleUpload(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
             System.out.println("Usage: upload <source_file_on_client> <destination_on_server>");
             return;
         }
 
-        NetworkUtil.uploadFile(new File(args[0]), args[1], targetClient.getConnection());
+        NetworkUtil.uploadFile(new File(args[0]), args[1], selectedClient.getConnection());
         System.out.println("Uploading file " + args[0] + " to client");
     }
 
-    private static void handlePrint(String message, ServerClient targetClient) {
+    private static void handlePrint(String message) {
         if (message.isEmpty()) {
             System.out.println("Usage: print <message>");
             return;
         }
 
-        targetClient.getConnection().sendPacket(new PrintPacket(message));
+        selectedClient.getConnection().sendPacket(new PrintPacket(message));
         System.out.println("Message sent to client: " + message);
     }
 
-    private static void handleWebsite(String url, ServerClient targetClient) {
+    private static void handleWebsite(String url) {
         if (url.isEmpty()) {
             System.out.println("Usage: website <url>");
             return;
         }
 
-        targetClient.getConnection().sendPacket(new WebsitePacket(url));
+        selectedClient.getConnection().sendPacket(new WebsitePacket(url));
         System.out.println("Website URL sent to client: " + url);
     }
 
-    private static void handleSpeak(String message, ServerClient targetClient) {
+    private static void handleSpeak(String message) {
         if (message.isEmpty()) {
             System.out.println("Usage: speak <message>");
             return;
         }
 
-        targetClient.getConnection().sendPacket(new SpeakPacket(message));
+        selectedClient.getConnection().sendPacket(new SpeakPacket(message));
         System.out.println("Spoken message sent to client: " + message);
     }
 }

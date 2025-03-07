@@ -22,6 +22,7 @@ public class SocketConnection {
     public SocketConnection(Socket socket) {
         this.socket = socket;
         try {
+            this.socket.setSoTimeout(2);
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
         } catch (IOException e) {
@@ -38,7 +39,11 @@ public class SocketConnection {
     }
 
     public boolean isActive() {
-        return !socket.isClosed();
+        try {
+            return !(new PrintWriter(socket.getOutputStream(), true).checkError());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private Socket getSocket() {
@@ -95,7 +100,6 @@ public class SocketConnection {
         synchronized (incoming) {
             ByteBuf buf = new ByteBuf(available);
             try {
-                socket.setSoTimeout(2);
                 while (true) {
                     buf.writeByte(in.readByte());
                 }

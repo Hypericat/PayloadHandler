@@ -17,19 +17,14 @@ public class ServerNetworkHandler {
         try {
             Socket socket = serverSocket.accept();
 
-
             SocketConnection connection = new SocketConnection(socket);
-
-            PacketHandler packetHandler = new PacketHandler(connection);
-
-            ServerClient client = new ServerClient(connection, this);
-
+            ServerClient client = new ServerClient(connection, this, nextClientId);
+            Server.Server.setSelectedClient(client);
             connections.put(connection, client);
 
             System.out.println("Client connected and assigned ID: " + nextClientId);
 
             nextClientId++;
-
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -38,7 +33,12 @@ public class ServerNetworkHandler {
     }
 
     public ServerClient getClientById(int clientId) {
-        return connections.values().stream().skip(clientId - 1).findFirst().orElse(null);
+        for (ServerClient client : connections.values()) {
+            if (client.getId() == clientId) {
+                return client;
+            }
+        }
+        return null;
     }
 
     public int getConnectionCount() {
