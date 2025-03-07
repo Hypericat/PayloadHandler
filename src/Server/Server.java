@@ -91,7 +91,7 @@ public class Server {
                 changeDirectory(arguments);
                 break;
             case "upload":
-                handleUploadRequest(arguments);
+                handleUpload(arguments);
                 break;
             case "download":
                 handleDownloadRequest(arguments);
