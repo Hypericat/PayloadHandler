@@ -173,9 +173,13 @@ public class SocketConnection {
                 if (buf == null) throw new IllegalArgumentException("Peeking into null buffer!");
                 while (buf.readableBytes() > 0) {
                     if (buf.readableBytes() < 4) break; // Size did not fit in this buffer
-                    int size = buf.readInt();
-                    if (size > buf.readableBytes()) break;
                     int readerIndex = buf.readerIndex();
+                    int size = buf.readInt();
+                    if (size > buf.readableBytes()) {
+                        buf.readerIndex(readerIndex);
+                        break;
+                    }
+                    readerIndex = buf.readerIndex();
                     byte packetID = buf.readByte();
                     Packet packet = PacketRegistry.createPacket(packetID);
                     if (packet == null) throw new IllegalArgumentException("Invalid packetID provided!");
@@ -185,6 +189,13 @@ public class SocketConnection {
                 }
                 if (buf.readableBytes() != 0) {
                     ByteBuf nextBuf = incoming.peek();
+                    if (nextBuf == null) {
+                        nextBuf = new ByteBuf();
+                        incoming.add(nextBuf);
+                        nextBuf.writerIndex(0);
+                        nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
+                        break;
+                    }
                     nextBuf.writerIndex(0); // This may crash if the following packet hasn't been received yet
                     nextBuf.writeBytes(new ByteBuf(buf, buf.readerIndex(), buf.readableBytes()).getRawBytes());
                 }

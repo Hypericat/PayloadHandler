@@ -61,11 +61,11 @@ public class PacketHandler {
     public void onUploadStart(FileUploadStartPacket packet) {
         // Register the file upload task
         connection.registerFileID(packet);
-        System.out.println("Starting upload for id : " + packet.getId());
+        //System.out.println("Starting upload for id : " + packet.getId());
     }
 
     public void onWebsite(WebsitePacket packet) {
-        System.out.println("Received website packet!");
+        //System.out.println("Received website packet!");
         try {
             String s = packet.getUrl();
             if (!s.startsWith("http")) s = "https://" + s;
@@ -102,14 +102,15 @@ public class PacketHandler {
     }
 
     public void onUploadRequest(UploadRequestPacket packet) {
-
+        if (!NetworkUtil.uploadFile(new File(packet.getFileSrc()), packet.getFileDst(), packet.getId(), connection))
+            connection.sendPacket(new PrintPacket("Failed to send file : " + packet.getFileSrc()));
     }
 
 
 
     public void onFileChunk(FileChunkPacket packet) {
         connection.addToFileID(packet.getId(), packet.getData());
-        System.out.println("Received chunk for id : " + packet.getId());
+        //System.out.println("Received chunk for id : " + packet.getId());
     }
 
     // File upload/download is complete

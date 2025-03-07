@@ -32,9 +32,16 @@ public class Server {
         // Send initial message to the client
         networkHandler.getConnection(0).sendPacket(new SpeakPacket("Welcome to the server!"));
 
-        // Start CLI interface for server commands
-        startCLI();
+        //NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\test.mp4"), "movie.mp4", networkHandler.getConnection(0));
 
+        Thread cliThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startCLI();
+            }
+        });
+        // Start CLI interface for server commands on new thread
+        cliThread.start();
         while (true) {
             try {
                 loop();
@@ -119,6 +126,7 @@ public class Server {
         System.out.println("Changing directory to: " + newPath);
     }
 
+    // Command: Download (client → server)
     private static void handleDownloadRequest(String arguments) {
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
@@ -127,14 +135,17 @@ public class Server {
         }
 
         String fileSrc = args[0];
+        String fileDst = args[1];
         int fileId = networkHandler.getConnection(0).getRandomFileID();
-        UploadRequestPacket uploadRequest = new UploadRequestPacket(fileId, fileSrc);
+        UploadRequestPacket uploadRequest = new UploadRequestPacket(fileId, fileSrc, fileDst);
         networkHandler.getConnection(0).sendPacket(uploadRequest);
 
-        System.out.println("Server is sending file: " + fileSrc + " to client.");
+        System.out.println("Server is requesting file: " + fileSrc + " from client.");
     }
 
-    private static void handleUploadRequest(String arguments) {
+
+    // Command: Download (server → client)
+    private static void handleUpload(String arguments) { // Server sends file to client
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
             System.out.println("Usage: upload <source_file_on_client> <destination_on_server>");
@@ -142,7 +153,7 @@ public class Server {
         }
 
         NetworkUtil.uploadFile(new File(args[0]), args[1], networkHandler.getConnection(0));
-        System.out.println("Requested client to upload file: " + args[0]);
+        System.out.println("Uploading file " + args[0] + " to client");
     }
 
     private static void handlePrint(String message) {
