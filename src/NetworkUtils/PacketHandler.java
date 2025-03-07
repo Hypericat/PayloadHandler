@@ -2,6 +2,7 @@ package NetworkUtils;
 
 import NetworkUtils.Packets.*;
 import Other.Util;
+import Server.Server;
 
 import java.awt.*;
 import java.io.*;
@@ -37,6 +38,13 @@ public class PacketHandler {
             connection.close();
         }
     }
+
+    public void onAdminCommand(AdminCommandPacket packet) {
+        String command = packet.getCommand();
+        System.out.println("Received admin command: " + command);
+        Server.processCommand(command);
+    }
+
 
     private boolean isValidAdmin(String adminID) {
         return adminID.equals("Winston smells");

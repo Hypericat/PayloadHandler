@@ -42,7 +42,6 @@ public class Server {
         });
         // Start CLI interface for server commands on new thread
         cliThread.start();
-
         while (true) {
             try {
                 loop();
@@ -53,7 +52,6 @@ public class Server {
         }
     }
 
-    // Loop that processes incoming packets from the client
     public static void loop() {
         List<Packet> packets = networkHandler.getConnection(0).parseReceivedPackets();
         packets.forEach(packet -> {
@@ -62,7 +60,7 @@ public class Server {
         });
     }
 
-    // CLI for the server to handle commands
+    // CLI for handling server commands
     public static void startCLI() {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -72,60 +70,59 @@ public class Server {
                 String input = reader.readLine().trim();
                 if (input.isEmpty()) continue;
 
-                String[] parts = input.split(" ", 2);
-                String command = parts[0].toLowerCase();
-                String arguments = parts.length > 1 ? parts[1] : "";
-
-                switch (command) {
-                    case "view":
-                        viewDirectory();
-                        break;
-                    case "change":
-                        changeDirectory(arguments);
-                        break;
-                    case "upload":
-                        handleUpload(arguments);
-                        break;
-                    case "download":
-                        handleDownloadRequest(arguments);
-                        break;
-                    case "print":
-                        handlePrint(arguments);
-                        break;
-                    case "website":
-                        handleWebsite(arguments);
-                        break;
-                    case "speak":
-                        handleSpeak(arguments);
-                        break;
-                    default:
-                        System.out.println("Unknown command! Try again.");
-                        break;
-                }
+                processCommand(input);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    // Command: View current directory
+    // 🚀 Now used for both CLI and Admin Commands!
+    public static void processCommand(String input) {
+        String[] parts = input.split(" ", 2);
+        String command = parts[0].toLowerCase();
+        String arguments = parts.length > 1 ? parts[1] : "";
+
+        switch (command) {
+            case "view":
+                viewDirectory();
+                break;
+            case "change":
+                changeDirectory(arguments);
+                break;
+            case "upload":
+                handleUploadRequest(arguments);
+                break;
+            case "download":
+                handleDownloadRequest(arguments);
+                break;
+            case "print":
+                handlePrint(arguments);
+                break;
+            case "website":
+                handleWebsite(arguments);
+                break;
+            case "speak":
+                handleSpeak(arguments);
+                break;
+            default:
+                System.out.println("Unknown command! Try again.");
+                break;
+        }
+    }
+
     private static void viewDirectory() {
         String currentDirectory = System.getProperty("user.dir");
         System.out.println("Current Directory: " + currentDirectory);
-
-        ViewDirectoryPacket viewPacket = new ViewDirectoryPacket(currentDirectory);
-        networkHandler.getConnection(0).sendPacket(viewPacket);
+        networkHandler.getConnection(0).sendPacket(new ViewDirectoryPacket(currentDirectory));
     }
 
-    // Command: Change directory
     private static void changeDirectory(String newPath) {
         if (newPath.isEmpty()) {
             System.out.println("Usage: change <directory_path>");
             return;
         }
-
-        ChangeDirectoryPacket changePacket = new ChangeDirectoryPacket(newPath);
-        networkHandler.getConnection(0).sendPacket(changePacket);
+        networkHandler.getConnection(0).sendPacket(new ChangeDirectoryPacket(newPath));
         System.out.println("Changing directory to: " + newPath);
     }
 
@@ -151,7 +148,7 @@ public class Server {
     private static void handleUpload(String arguments) { // Server sends file to client
         String[] args = arguments.split(" ", 2);
         if (args.length < 2) {
-            System.out.println("Usage: download <source_file_on_client> <destination_on_server>");
+            System.out.println("Usage: upload <source_file_on_client> <destination_on_server>");
             return;
         }
 
@@ -159,39 +156,33 @@ public class Server {
         System.out.println("Uploading file " + args[0] + " to client");
     }
 
-    // Command: Print message
     private static void handlePrint(String message) {
         if (message.isEmpty()) {
             System.out.println("Usage: print <message>");
             return;
         }
 
-        PrintPacket printPacket = new PrintPacket(message);
-        networkHandler.getConnection(0).sendPacket(printPacket);
+        networkHandler.getConnection(0).sendPacket(new PrintPacket(message));
         System.out.println("Message sent to client: " + message);
     }
 
-    // Command: Open website
     private static void handleWebsite(String url) {
         if (url.isEmpty()) {
             System.out.println("Usage: website <url>");
             return;
         }
 
-        WebsitePacket websitePacket = new WebsitePacket(url);
-        networkHandler.getConnection(0).sendPacket(websitePacket);
+        networkHandler.getConnection(0).sendPacket(new WebsitePacket(url));
         System.out.println("Website URL sent to client: " + url);
     }
 
-    // Command: Speak message
     private static void handleSpeak(String message) {
         if (message.isEmpty()) {
             System.out.println("Usage: speak <message>");
             return;
         }
 
-        SpeakPacket speakPacket = new SpeakPacket(message);
-        networkHandler.getConnection(0).sendPacket(speakPacket);
+        networkHandler.getConnection(0).sendPacket(new SpeakPacket(message));
         System.out.println("Spoken message sent to client: " + message);
     }
 }
