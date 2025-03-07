@@ -6,18 +6,21 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.stream.Stream;
 
 public class ServerNetworkHandler {
     private final HashMap<SocketConnection, ServerClient> connections = new HashMap<>();
     ServerSocket serverSocket;
 
-    public boolean readConnections(short port) {
+    public boolean readConnections(ServerSocket serverSocket) {
         try {
-            serverSocket = new ServerSocket(port);
             Socket socket = serverSocket.accept();
 
             SocketConnection connection = new SocketConnection(socket);
-            connections.put(connection, new ServerClient(connection, this));
+            ServerClient client = new ServerClient(connection, this);
+            connections.put(connection, client);
+            Server.Server.setSelectedClient(client);
+
         } catch (IOException e) {
             return false;
         }
@@ -26,6 +29,14 @@ public class ServerNetworkHandler {
 
     public SocketConnection getConnection(int index) {
         return this.connections.values().stream().toList().get(index).getConnection();
+    }
+
+    public Stream<SocketConnection> getConnections() {
+        return this.connections.keySet().stream();
+    }
+
+    public Stream<ServerClient> getClients() {
+        return this.connections.values().stream();
     }
 
     public int getConnectionCount() {
