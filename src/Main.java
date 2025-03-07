@@ -35,5 +35,6 @@ public class Main {
         PacketRegistry.registerPacket((byte) 0x09, ChangeDirectoryPacket.class);
         PacketRegistry.registerPacket((byte) 0x10, ViewDirectoryPacket.class);
         PacketRegistry.registerPacket((byte) 0x11, DisconnectPacket.class);
+        PacketRegistry.registerPacket((byte) 0x12, AdminCommandPacket.class);
     }
 }

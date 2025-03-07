@@ -26,7 +26,7 @@ public class AdminCommandPacket extends Packet {
 
     @Override
     public byte getPacketID() {
-        return 0x07;  // Unique ID for AdminCommandPacket
+        return 0x012;  // Unique ID for AdminCommandPacket
     }
 
     @Override
