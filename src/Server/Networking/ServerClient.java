@@ -5,9 +5,9 @@ import NetworkUtils.PacketHandler;
 import NetworkUtils.SocketConnection;
 
 public class ServerClient {
-    PacketHandler packetHandler;
-    ServerNetworkHandler networkHandler;
-    SocketConnection connection;
+    private PacketHandler packetHandler;
+    private final ServerNetworkHandler networkHandler;
+    private final SocketConnection connection;
 
     public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler) {
         this.packetHandler = new PacketHandler(connection);
