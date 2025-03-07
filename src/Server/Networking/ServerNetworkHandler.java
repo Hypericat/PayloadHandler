@@ -5,11 +5,10 @@ import NetworkUtils.SocketConnection;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class ServerNetworkHandler {
-    private final List<SocketConnection> connections = new ArrayList<>();
+    private final HashMap<SocketConnection, ServerClient> connections = new HashMap<>();
     ServerSocket serverSocket;
 
     public boolean readConnections(short port) {
@@ -17,7 +16,8 @@ public class ServerNetworkHandler {
             serverSocket = new ServerSocket(port);
             Socket socket = serverSocket.accept();
 
-            connections.add(new SocketConnection(socket));
+            SocketConnection connection = new SocketConnection(socket);
+            connections.put(connection, new ServerClient(connection, this));
         } catch (IOException e) {
             return false;
         }
@@ -25,14 +25,20 @@ public class ServerNetworkHandler {
     }
 
     public SocketConnection getConnection(int index) {
-        return this.connections.get(index);
+        return this.connections.values().stream().toList().get(index).getConnection();
     }
 
     public int getConnectionCount() {
         return this.connections.size();
     }
 
-    public void close() {
-        connections.forEach(SocketConnection::close);
+    public void close(SocketConnection connection) {
+        connection.close();
+        connections.remove(connection);
+    }
+
+    public void closeAll() {
+        connections.keySet().forEach(SocketConnection::close);
+        connections.clear();
     }
 }

@@ -19,27 +19,22 @@ public class Server {
         System.out.println("Running server!");
         networkHandler = new ServerNetworkHandler();
 
-        while (true) {
-            if (!networkHandler.readConnections(NetworkUtil.port)) {
-                System.out.println("Failed to connect!");
-                continue;
-            }
-            break;
-        }
-        System.out.println("Client connected!");
-        packetHandler = new PacketHandler(networkHandler.getConnection(0));
-
-        // Send initial message to the client
-        networkHandler.getConnection(0).sendPacket(new SpeakPacket("Welcome to the server!"));
-
-        //NetworkUtil.uploadFile(new File("C:\\Users\\Hypericats\\Downloads\\test.mp4"), "movie.mp4", networkHandler.getConnection(0));
-
-        Thread cliThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                startCLI();
+        Thread connectionChecker = new Thread(() -> {
+            while (true) {
+                if (!networkHandler.readConnections(NetworkUtil.port)) {
+                    System.out.println("Failed to connect!");
+                    continue;
+                }
+                System.out.println("Found a connection!");
             }
         });
+
+        connectionChecker.start();
+
+
+        packetHandler = new PacketHandler(networkHandler.getConnection(0));
+
+        Thread cliThread = new Thread(() -> startCLI());
         // Start CLI interface for server commands on new thread
         cliThread.start();
         while (true) {
