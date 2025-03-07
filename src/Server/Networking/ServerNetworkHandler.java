@@ -18,7 +18,7 @@ public class ServerNetworkHandler {
 
             SocketConnection connection = new SocketConnection(socket);
             String userFolder = System.getProperty("user.home");
-            ServerClient client = new ServerClient(connection, this, nextClientId);
+            ServerClient client = new ServerClient(connection, this, nextClientId, userFolder);
             Server.Server.setSelectedClient(client);
             connections.put(connection, client);
 

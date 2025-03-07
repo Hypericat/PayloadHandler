@@ -11,12 +11,12 @@ public class ServerClient {
     private final int id;
     private String userFolder;
 
-    public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler, int id) {
+    public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler, int id, String userFolder) {
         this.packetHandler = new PacketHandler(connection);
         this.networkHandler = networkHandler;
         this.connection = connection;
         this.id = id;
-        this.userFolder = userFolder;
+        this.userFolder = this.userFolder;
     }
 
     public String getUserFolder() {
