@@ -95,7 +95,7 @@ public class Server {
     }
 
     public static void processCommand(String input) {
-        String[] parts = input.split(" ", 3);
+        String[] parts = input.split(" ", 2);
         String command = parts[0].toLowerCase();
         String arguments = parts.length > 1 ? parts[1] : "";
 
