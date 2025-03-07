@@ -72,7 +72,6 @@ public class Server {
 
             List<Packet> packets = client.getConnection().parseReceivedPackets();
             packets.forEach(packet -> {
-                System.out.println("Received packet: " + packet.toString());
                 client.processPacket(packet);
             });
         });
@@ -131,7 +130,7 @@ public class Server {
             case "speak":
                 handleSpeak(arguments);
                 break;
-            case "listconnectedclients":
+            case "list clients":
                 listConnectedClients();
                 break;
             default:

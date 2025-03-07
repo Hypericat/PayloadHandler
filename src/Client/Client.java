@@ -52,7 +52,6 @@ public class Client {
     public static void loop() {
         List<Packet> packets = networkHandler.getConnection().parseReceivedPackets();
         packets.forEach(packet -> {
-            System.out.println("Received packet : " + packet.toString());
             packet.execute(packetHandler);
         });
 
