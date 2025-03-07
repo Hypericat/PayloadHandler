@@ -146,15 +146,19 @@ public class Server {
             try {
                 InetAddress clientAddress = client.getConnection().getSocket().getInetAddress();
                 String clientIP = clientAddress.getHostAddress();
-                String clientName = clientAddress.getHostName();
-                int clientId = client.getId();
+                String clientName = clientAddress.getCanonicalHostName();
+                if (clientName.equals(clientIP)) {
+                    clientName = "Unknown Host";
+                }
 
+                int clientId = client.getId();
                 System.out.println("ID: " + clientId + " | IP: " + clientIP + " | PC Name: " + clientName);
             } catch (Exception e) {
                 System.out.println("Error retrieving client information: " + e.getMessage());
             }
         });
     }
+
 
     private static void useClientById(String clientIdStr) {
         try {
