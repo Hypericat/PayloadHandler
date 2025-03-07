@@ -36,11 +36,14 @@ public class Server {
                     continue;
                 }
                 System.out.println("Found a connection!");
-                startCLI();
             }
         });
 
         connectionChecker.start();
+
+        Thread cliThread = new Thread(() -> startCLI());
+        // Start CLI interface for server commands on new thread
+        cliThread.start();
 
         while (true) {
             try {
@@ -76,11 +79,6 @@ public class Server {
     }
 
     public static void startCLI() {
-        if (networkHandler.getConnectionCount() == 0) {
-            System.out.println("No clients connected. Waiting for connections...");
-            return;
-        }
-
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         while (true) {
