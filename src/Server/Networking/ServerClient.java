@@ -9,12 +9,18 @@ public class ServerClient {
     private final ServerNetworkHandler networkHandler;
     private final SocketConnection connection;
     private final int id;
+    private String userFolder;
 
     public ServerClient(SocketConnection connection, ServerNetworkHandler networkHandler, int id) {
         this.packetHandler = new PacketHandler(connection);
         this.networkHandler = networkHandler;
         this.connection = connection;
         this.id = id;
+        this.userFolder = userFolder;
+    }
+
+    public String getUserFolder() {
+        return userFolder;
     }
 
     public int getId() {

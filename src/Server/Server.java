@@ -146,8 +146,9 @@ public class Server {
             try {
                 InetAddress clientAddress = client.getConnection().getSocket().getInetAddress();
                 String clientIP = clientAddress.getHostAddress();
-                String clientName = clientAddress.getCanonicalHostName();
-                if (clientName.equals(clientIP)) {
+                String clientName = client.getUserFolder(); // Get the stored user folder (PC name)
+
+                if (clientName == null || clientName.isEmpty()) {
                     clientName = "Unknown Host";
                 }
 

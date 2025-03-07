@@ -1,6 +1,5 @@
 package Server.Networking;
 
-import NetworkUtils.PacketHandler;
 import NetworkUtils.SocketConnection;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -18,6 +17,7 @@ public class ServerNetworkHandler {
             Socket socket = serverSocket.accept();
 
             SocketConnection connection = new SocketConnection(socket);
+            String userFolder = System.getProperty("user.home");
             ServerClient client = new ServerClient(connection, this, nextClientId);
             Server.Server.setSelectedClient(client);
             connections.put(connection, client);
