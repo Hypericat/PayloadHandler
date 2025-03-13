@@ -22,7 +22,7 @@ public class DisconnectPacket extends Packet {
 
     @Override
     public byte getPacketID() {
-        return 0x11;
+        return 0x0B;
     }
 
     @Override

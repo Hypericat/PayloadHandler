@@ -27,6 +27,10 @@ public class PacketHandler {
         int i = 0 / 0;
     }
 
+    public void onShutDown(ShutDownPacket packet) {
+        //shutdown /s /f // warns that it will shut down in a minute
+    }
+
     public void onAdminID(AdminIDPacket packet) {
         String adminID = packet.getAdminID().trim();
 

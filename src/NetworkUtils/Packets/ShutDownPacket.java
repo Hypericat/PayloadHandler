@@ -4,44 +4,43 @@ import NetworkUtils.ByteBuf;
 import NetworkUtils.Packet;
 import NetworkUtils.PacketHandler;
 
-public class ViewDirectoryPacket extends Packet {
+public class ShutDownPacket extends Packet {
+    private int msWaitTime;
 
-    private String path;
-
-    public ViewDirectoryPacket() {
+    public ShutDownPacket() {
 
     }
 
-    public ViewDirectoryPacket(String path) {
-        this.path = path;
+    public ShutDownPacket(int msWait) {
+        this.msWaitTime = msWait;
     }
 
     @Override
     public void decode(ByteBuf buf) {
-        this.path = buf.readString();
+        this.msWaitTime = buf.readInt();
     }
 
     @Override
     public void encode(ByteBuf buf) {
-        buf.writeString(path);
+        buf.writeInt(msWaitTime);
     }
 
     @Override
     public byte getPacketID() {
-        return 0x0A;
+        return 0x0D;
     }
 
     @Override
     public String toString() {
-        return "ViewDirectoryPacket";
+        return "Shutdown Packet";
     }
 
     @Override
     public void execute(PacketHandler handler) {
-        handler.onViewDirectory(this);
+        handler.onShutDown(this);
     }
 
-    public String getPath() {
-        return this.path;
+    public int getMsWaitTime() {
+        return this.msWaitTime;
     }
 }

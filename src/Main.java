@@ -34,8 +34,9 @@ public class Main {
         PacketRegistry.registerPacket((byte) 0x07, FileCompletePacket.class);
         PacketRegistry.registerPacket((byte) 0x08, UploadRequestPacket.class);
         PacketRegistry.registerPacket((byte) 0x09, ChangeDirectoryPacket.class);
-        PacketRegistry.registerPacket((byte) 0x10, ViewDirectoryPacket.class);
-        PacketRegistry.registerPacket((byte) 0x11, DisconnectPacket.class);
-        PacketRegistry.registerPacket((byte) 0x12, AdminCommandPacket.class);
+        PacketRegistry.registerPacket((byte) 0x0A, ViewDirectoryPacket.class);
+        PacketRegistry.registerPacket((byte) 0x0B, DisconnectPacket.class);
+        PacketRegistry.registerPacket((byte) 0x0C, AdminCommandPacket.class);
+        PacketRegistry.registerPacket((byte) 0x0D, ShutDownPacket.class);
     }
 }
